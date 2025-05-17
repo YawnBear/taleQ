@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+"use client";
+
+>>>>>>> ca97b52b4c9044e7aff43e3c693426489f1ed78e
 import { useEffect, useState } from "react";
 import { FileUpload } from "@/components/ui/uploadFile";
 
