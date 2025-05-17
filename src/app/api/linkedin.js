@@ -27,4 +27,29 @@ app.get('/auth/linkedin/callback', async (req, res) => {
   res.send('Authenticated! Access Token: ' + accessToken);
 });
 
+// ...existing code...
+const nodemailer = require('nodemailer');
+
+// Call this function after resume submission
+async function sendLinkedInAuthEmail(applicantEmail) {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail', // or your email provider
+    auth: {
+      user: 'taleq.app@gmail.com',
+      pass: 'taleq@9999',
+    },
+  });
+
+  const mailOptions = {
+    from: 'your_email@gmail.com',
+    to: applicantEmail,
+    subject: 'Connect your LinkedIn profile',
+    html: `<p>Thank you for submitting your resume!<br>
+           Please <a href="https://tale-q.vercel.app/auth/linkedin">connect your LinkedIn profile</a> to complete your application.</p>`,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+// ...existing code...
+
 app.listen(3000, () => console.log('Server started on http://localhost:3000'));
