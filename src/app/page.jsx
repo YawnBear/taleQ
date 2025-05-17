@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import JobDesc from "@/components/JobDesc";
-import ResultTable from "@/components/ResultTable";
 
 export default function Home() {
     const [tableData, setTableData] = useState();
