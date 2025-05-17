@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import JobDesc from "@/components/JobDesc";
-import resultTable from "@/components/resultTable";
+import ResultTable from "@/components/ResultTable";
 
 export default function Home() {
     const [tableData, setTableData] = useState();
@@ -28,7 +28,7 @@ export default function Home() {
         <main className="flex min-h-screen flex-col p-24">
             <div className="flex items-center justify-between">
                 <JobDesc />
-                <resultTable />
+                <ResultTable />
             </div>
         </main>
     );
