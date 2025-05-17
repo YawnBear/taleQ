@@ -19,9 +19,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="public/taleQ_logo_only" />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <link rel="icon" href="/taleQ_logo_only.png" />
         {children}
       </body>
     </html>
