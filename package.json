@@ -9,9 +9,12 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.2",
     "@tabler/icons-react": "^3.33.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "jamaibase": "^0.4.0",
+    "lucide-react": "^0.511.0",
     "motion": "^12.12.1",
     "next": "15.3.2",
     "react": "^19.0.0",
@@ -24,6 +27,7 @@
     "@tailwindcss/postcss": "^4",
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.0"
   }
 }
