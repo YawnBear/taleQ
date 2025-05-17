@@ -1,7 +1,5 @@
-
-"use client";
-
 import { useEffect, useState } from "react";
+import { FileUpload } from "@/components/ui/uploadFile";
 
 export default function Home() {
     const [tableData, setTableData] = useState();
@@ -25,6 +23,8 @@ export default function Home() {
 
     return (
         <main className="flex min-h-screen flex-col p-24">
+            <div>taleQ</div>
+            <FileUpload>Upload file</FileUpload>
             <div className="space-y-6">
                 <h1 className="text-4xl">List of Tables</h1>
                 <table className="min-w-full divide-y divide-gray-200">
