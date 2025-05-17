@@ -36,7 +36,7 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
+button:hover, input:focus-visible, textarea:focus-visible, input:hover, textarea:hover {
   border-color: #646cff;
 }
 button:focus,
