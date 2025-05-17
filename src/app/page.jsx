@@ -9,7 +9,7 @@ export default function Home() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch("/api/list-tables");
+                const response = await fetch("/api/jamai");
                 if (response.ok) {
                     const data = await response.json();
                     setTableData(data);
