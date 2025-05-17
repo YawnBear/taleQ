@@ -28,7 +28,7 @@ export default function Home() {
         <main className="flex min-h-screen flex-col p-24">
             <div className="flex items-center justify-between">
                 <JobDesc />
-                <ResultTable />
+                {/* <ResultTable /> */}
             </div>
         </main>
     );
