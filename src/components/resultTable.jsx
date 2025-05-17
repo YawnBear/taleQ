@@ -1,7 +1,6 @@
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -12,11 +11,10 @@ export default function resultTable() {
     return (
         <div className="flex flex-col items-center justify-center w-full h-screen">
             <Table>
-                <TableCaption>A list of your recent invoices.</TableCaption>
                 <TableHeader>
                     <TableRow>
-                    <TableHead className="w-[100px]">Invoice</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead className="w-[100px]">Name</TableHead>
+                    <TableHead>Job Position</TableHead>
                     <TableHead>Method</TableHead>
                     <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
