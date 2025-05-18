@@ -58,7 +58,7 @@ export default function JobDesc() {
     function handleToggleForm() {
     setToggleForm(!toggleForm);
     }
-
+// Function to send email notification, here test only, should be used in other places
     async function notifyCandidate(email, details) {
         const response = await fetch('/api/notify-interview', {
             method: 'POST',
@@ -137,7 +137,7 @@ export default function JobDesc() {
                                 type="submit"
                                 className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                 disabled={isSubmitting}
-                                onClick={() => notifyCandidate("dltyx04@gmail.com", "Interview scheduled for 10 AM tomorrow")}
+                                onClick={() => notifyCandidate("dltyx04@gmail.com", "Interview scheduled for 10 AM tomorrow")} //calling email function
                             >
                                 {isSubmitting ? "Submitting..." : "Submit"}
                             </button>
