@@ -148,7 +148,7 @@ export default function JobDesc() {
 
                         <button
                             onClick={handleToggleForm}
-                            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition"
+                            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition border border-blue-500"
                         >
                             Close
                         </button>

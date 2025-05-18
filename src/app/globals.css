@@ -5,12 +5,12 @@
   --foreground: #171717;
 }
 
-@theme inline {
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+} */
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -27,7 +27,7 @@ body {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 0.1px solid #a9a8aa;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
@@ -41,5 +41,7 @@ button:hover, input:focus-visible, textarea:focus-visible, input:hover, textarea
 }
 button:focus,
 button:focus-visible {
-  outline: 1px auto -webkit-focus-ring-color;
+  border-color: #646cff;
+  color: #ffffff;
+  box-shadow: 0 0 0 1px #646cff;
 }
