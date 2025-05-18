@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 import { mkdir } from 'fs/promises';
-import fs from 'fs';
 import FormData from 'form-data';
 import fetch from 'node-fetch';  
 
@@ -31,14 +30,24 @@ export async function POST(req) {
     const JamAIFormData = new FormData();
     JamAIFormData.append("file", buffer);
     JamAIFormData.append('file_name', file.name)
-    JamAIFormData.append('table_id', 'test1')
+    JamAIFormData.append('table_id', 'resume')
 
 
     const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/upload_file', {
-      method: 'POST',
-      body: JamAIFormData,
-      headers: JamAIFormData.getHeaders(),
+        method: 'POST',
+        body: JamAIFormData,
+        headers: {
+            ...JamAIFormData.getHeaders(),
+            Authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
+            "X-PROJECT-ID": process.env.JAMAI_PROJECT_ID,
+        },
     });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("JamAI API error:", errorText);
+      return NextResponse.json({ message: "Failed to connect to JamAI" }, { status: response.status });
+    }
 
     const result = await response.json();
 
