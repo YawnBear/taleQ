@@ -28,17 +28,16 @@ export async function POST(req) {
     console.log("Uploaded file saved locally:", localFilePath);
 
     // Forward the file to the external API
-    const externalFormData = new FormData();
-    externalFormData.append("file", buffer, {
-      filename: file.name,
-      contentType: file.type,
-    });
+    const JamAIFormData = new FormData();
+    JamAIFormData.append("file", buffer);
+    JamAIFormData.append('file_name', file.name)
+    JamAIFormData.append('table_id', 'test1')
 
 
     const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/upload_file', {
       method: 'POST',
-      body: externalFormData,
-      headers: externalFormData.getHeaders(),
+      body: JamAIFormData,
+      headers: JamAIFormData.getHeaders(),
     });
 
     const result = await response.json();
