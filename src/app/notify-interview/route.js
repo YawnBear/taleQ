@@ -1,43 +1,43 @@
-const express = require('express');
-const nodemailer = require('nodemailer');
+import nodemailer from "nodemailer";
 
-const app = express();
-app.use(express.json());
-
-// Function to send interview notification email
-async function sendInterviewNotificationEmail(candidateEmail, interviewDetails) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'taleq.app@gmail.com',
-      pass: 'taleq@9999',
-    },
-  });
-
-  const mailOptions = {
-    from: 'taleq.app@gmail.com',
-    to: candidateEmail,
-    subject: 'Interview Invitation from taleQ',
-    html: `<p>Congratulations! You have been shortlisted for an interview.<br>
-           <b>Details:</b> ${interviewDetails}<br>
-           Please reply to this email to confirm your availability.</p>`,
-  };
-
-  await transporter.sendMail(mailOptions);
-}
-
-// Endpoint to trigger interview notification
-app.post('/api/notify-interview', async (req, res) => {
-  const { email, details } = req.body;
-  if (!email || !details) {
-    return res.status(400).json({ error: 'Email and interview details are required.' });
-  }
+export async function POST(request) {
   try {
-    await sendInterviewNotificationEmail(email, details);
-    res.status(200).json({ message: 'Interview notification sent.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to send email.' });
-  }
-});
+    const { email, details } = await request.json();
 
-app.listen(3000, () => console.log('Server started on http://localhost:3000'));
+    if (!email || !details) {
+      return new Response(JSON.stringify({ error: "Email and interview details are required." }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "taleq.app@gmail.com",
+        pass: "taleq@9999",
+      },
+    });
+
+    const mailOptions = {
+      from: "taleq.app@gmail.com",
+      to: email,
+      subject: "Interview Invitation from taleQ",
+      html: `<p>Congratulations! You have been shortlisted for an interview.<br>
+             <b>Details:</b> ${details}<br>
+             Please reply to this email to confirm your availability.</p>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return new Response(JSON.stringify({ message: "Interview notification sent." }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: "Failed to send email." }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+}

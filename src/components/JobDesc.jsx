@@ -59,6 +59,23 @@ export default function JobDesc() {
     setToggleForm(!toggleForm);
     }
 
+    async function notifyCandidate(email, details) {
+    const response = await fetch('/api/notify-interview', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, details }),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+        alert('Interview notification sent!');
+    } else {
+        alert('Failed to send notification: ' + data.error);
+    }
+    }
+
     return (
         <div className="flex flex-col items-center justify-center w-full h-screen">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -120,6 +137,7 @@ export default function JobDesc() {
                                 type="submit"
                                 className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
                                 disabled={isSubmitting}
+                                onClick={() => notifyCandidate("dltyx04@gmail.com", "Interview scheduled for 10 AM tomorrow")}
                             >
                                 {isSubmitting ? "Submitting..." : "Submit"}
                             </button>
