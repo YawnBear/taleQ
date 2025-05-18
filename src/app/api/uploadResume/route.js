@@ -14,7 +14,6 @@ export async function POST(req) {
       return NextResponse.json({ message: "No file uploaded" }, { status: 400 });
     }
 
-    // Save the file locally
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Forward the file to the external API
