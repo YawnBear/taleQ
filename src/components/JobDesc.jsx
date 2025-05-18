@@ -60,20 +60,20 @@ export default function JobDesc() {
     }
 
     async function notifyCandidate(email, details) {
-    const response = await fetch('/api/notify-interview', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, details }),
-    });
+        const response = await fetch('/api/notify-interview', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, details }),
+        });
 
-    const data = await response.json();
-    if (response.ok) {
-        alert('Interview notification sent!');
-    } else {
-        alert('Failed to send notification: ' + data.error);
-    }
+        const data = await response.json();
+        if (response.ok) {
+            alert(data.message);
+        } else {
+            alert('Failed to send notification: ' + data.error);
+        }
     }
 
     return (
