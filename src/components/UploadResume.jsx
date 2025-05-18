@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import {FileUpload} from "@/components/ui/uploadFile"
+import {FileUpload} from "@/components/ui/UploadFile"
 
 export default function UploadResume() {
     const [name, setName] = useState("");

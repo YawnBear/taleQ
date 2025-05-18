@@ -8,8 +8,6 @@ import fetch from 'node-fetch';
 export async function POST(req) {
   try {
     const formData = await req.formData();
-    const name = formData.get("name");
-    const description = formData.get("description");
     const file = formData.get("file");
 
     if (!file) {
@@ -18,13 +16,6 @@ export async function POST(req) {
 
     // Save the file locally
     const buffer = Buffer.from(await file.arrayBuffer());
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-
-    await mkdir(uploadDir, { recursive: true });
-    const localFilePath = path.join(uploadDir, file.name);
-    await writeFile(localFilePath, buffer);
-
-    console.log("Uploaded file saved locally:", localFilePath);
 
     // Forward the file to the external API
     const JamAIFormData = new FormData();
