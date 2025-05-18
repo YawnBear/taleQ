@@ -28,20 +28,25 @@ export async function POST(req) {
 
     // Forward the file to the external API
     const JamAIFormData = new FormData();
-    JamAIFormData.append("file", buffer);
+    JamAIFormData.append("file", buffer, {
+        filename: file.name,
+        contentType: file.type, 
+    });
     JamAIFormData.append('file_name', file.name)
-    JamAIFormData.append('table_id', 'resume')
+    JamAIFormData.append('table_id', 'test1')
 
 
-    const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/upload_file', {
+    const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/knowledge/upload_file', {
         method: 'POST',
         body: JamAIFormData,
         headers: {
             ...JamAIFormData.getHeaders(),
+            accept: 'application/json',
             Authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
             "X-PROJECT-ID": process.env.JAMAI_PROJECT_ID,
         },
     });
+
 
     if (!response.ok) {
       const errorText = await response.text();
