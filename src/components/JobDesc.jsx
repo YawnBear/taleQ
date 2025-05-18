@@ -77,11 +77,24 @@ export default function JobDesc() {
     }
 
     return (
-        <div className="flex flex-col items-center justify-center w-full h-screen">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="w-full p-4">
+            <div className="grid grid-cols-4 gap-4">
+                <div className="text-center">
+                    <button onClick={handleToggleForm} className="mt-4">+</button>
+                </div>
                 <div>
                     <button onClick={handleToggleForm} className="mt-4">+</button>
                 </div>
+                <div>
+                    <button onClick={handleToggleForm} className="mt-4">+</button>
+                </div>
+                <div>
+                    <button onClick={handleToggleForm} className="mt-4">+</button>
+                </div>
+                <div>
+                    <button onClick={handleToggleForm} className="mt-4">+</button>
+                </div>
+                
                 {toggleForm && (
                     <div className="fixed inset-0 backdrop-blur-sm bg-white/5 flex items-center justify-center z-50 transition-opacity">
                         <div className="bg-black p-8 rounded-2xl shadow-2xl border border-gray-300 w-full max-w-md text-center">
@@ -134,20 +147,19 @@ export default function JobDesc() {
                                 />
                             </div>
                             <button
-                                type="submit"
-                                className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                                disabled={isSubmitting}
-                                onClick={() => notifyCandidate("dltyx04@gmail.com", "Interview scheduled for 10 AM tomorrow")} //calling email function
+                            type="submit"
+                            className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                            disabled={isSubmitting}
+                            onClick={() => notifyCandidate("dltyx04@gmail.com", "Interview scheduled for 10 AM tomorrow")} //calling email function
                             >
                                 {isSubmitting ? "Submitting..." : "Submit"}
                             </button>
-
                             {successMessage && <div className="mt-4 text-green-500">{successMessage}</div>}
                             {errorMessage && <div className="mt-4 text-red-500">{errorMessage}</div>}
                             </form>
 
                         <button
-                            onClick={handleToggleForm}
+                            onClick={() => { handleToggleForm(); setSuccessMessage(""); }}
                             className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition border border-blue-500"
                         >
                             Close
