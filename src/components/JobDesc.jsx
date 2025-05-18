@@ -82,19 +82,6 @@ export default function JobDesc() {
                 <div className="text-center">
                     <button onClick={handleToggleForm} className="mt-4">+</button>
                 </div>
-                <div>
-                    <button onClick={handleToggleForm} className="mt-4">+</button>
-                </div>
-                <div>
-                    <button onClick={handleToggleForm} className="mt-4">+</button>
-                </div>
-                <div>
-                    <button onClick={handleToggleForm} className="mt-4">+</button>
-                </div>
-                <div>
-                    <button onClick={handleToggleForm} className="mt-4">+</button>
-                </div>
-                
                 {toggleForm && (
                     <div className="fixed inset-0 backdrop-blur-sm bg-white/5 flex items-center justify-center z-50 transition-opacity">
                         <div className="bg-black p-8 rounded-2xl shadow-2xl border border-gray-300 w-full max-w-md text-center">
