@@ -9,6 +9,8 @@ https://tale-q.vercel.app/
 - job position can edit and delete
 - user login (for companies)
 - store resume's into db 
+- skill gap analysis (email candidate why they didnt get selected and how could they do better ?)
+- take resume from email 
 
 
 # Installation Guide 
