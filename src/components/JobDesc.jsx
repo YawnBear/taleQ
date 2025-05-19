@@ -186,20 +186,6 @@ export default function JobDesc() {
 
                             {mode === "file" && (
                                 <form onSubmit={handleSubmit}>
-                                    <div className="text-left mb-4">
-                                        <label className="block text-gray-700 mb-1 text-sm font-medium" htmlFor="jobPosition">
-                                            Job Position
-                                        </label>
-                                        <input
-                                            id="jobPosition"
-                                            type="text"
-                                            required
-                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
-                                            placeholder="Enter job position"
-                                            value={jobPosition}
-                                            onChange={(e) => setJobPosition(e.target.value)}
-                                        />
-                                    </div>
 
                                     <div className="text-left mb-4">
                                         <label className="block text-gray-700 mb-1 text-sm font-medium">
