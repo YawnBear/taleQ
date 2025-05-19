@@ -17,7 +17,7 @@ export default function UploadResume() {
         const formData = new FormData();
         formData.append("name", name);
         formData.append("description", description);
-        formData.append("file", uploadedFiles[0]); // only one file for now
+        formData.append("file", uploadedFiles[0]);
 
         try {
             const response = await fetch("/api/uploadResume", {

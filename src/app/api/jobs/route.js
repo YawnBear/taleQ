@@ -2,58 +2,45 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
-    let body;
-    const contentType = request.headers.get('content-type') || '';
+    const pdfData = await request.formData();
+    const file = pdfData.get("file");
+    const jobPosition = pdfData.get("jobPosition");
 
-    if (contentType.includes('application/json')) {
-      body = await request.json();
-    } else if (contentType.includes('multipart/form-data') || contentType.includes('application/x-www-form-urlencoded')) {
-      const formData = await request.formData();
-      body = Object.fromEntries(formData.entries());
-    } else {
-      return NextResponse.json({ message: 'Unsupported content type' }, { status: 415 });
+    if (!file || !jobPosition) {
+      return NextResponse.json({ message: 'Missing file or jobPosition' }, { status: 400 });
     }
 
-    const { jobPosition, jobDesc, skillSet, remarks } = body;
+    const formData = new FormData(); // ✅ use a lowercase variable name
+    formData.append('file', file, jobPosition + '.pdf'); // ✅ send original file
+    formData.append('table_id', process.env.JAMAI_KNOWLEDGE_TABLE_ID);
 
-    if (!jobPosition || !jobDesc || !skillSet || !remarks) {
-      return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
-    }
-
-    const rowRes = await fetch('https://api.jamaibase.com/api/v1/gen_tables/knowledge/rows/add', {
+    const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/knowledge/embed_file', {
       method: 'POST',
       headers: {
         accept: 'application/json',
-        'content-type': 'application/json',
         authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
         'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
+        // ✅ Do NOT set Content-Type here — the browser will do it
       },
-      body: JSON.stringify({
-        table_id: process.env.JAMAI_KNOWLEDGE_TABLE_ID,
-        table_type: 'knowledge',
-        data: [
-          {
-            jobPosition,
-            jobDesc,
-            skillSet,
-            remarks,
-          },
-        ],
-      }),
+      body: formData,
     });
 
-    const rowText = await rowRes.text();
-    let rowData;
+    const text = await response.text();
+    let result;
     try {
-      rowData = JSON.parse(rowText);
-    } catch (e) {
-      console.error('Failed to parse row add response:', rowText);
-      rowData = { raw: rowText };
+      result = JSON.parse(text);
+    } catch {
+      result = { raw: text };
     }
 
-    return NextResponse.json({ message: 'Job data added successfully!', data: rowData });
+    if (!response.ok) {
+      return NextResponse.json({ message: 'Upload failed', result }, { status: response.status });
+    }
+
+    return NextResponse.json({ message: 'Upload successful', result });
+
   } catch (error) {
-    console.error('Server error:', error);
+    console.error('Upload error:', error);
     return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
   }
 }
