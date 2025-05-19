@@ -58,23 +58,23 @@ export default function JobDesc() {
     function handleToggleForm() {
     setToggleForm(!toggleForm);
     }
-// Function to send email notification, here test only, should be used in other places
-    async function notifyCandidate(email, details) {
-        const response = await fetch('/api/notify-interview', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ email, details }),
-        });
+// // Function to send email notification, here test only, should be used in other places
+//     async function notifyCandidate(email, details) {
+//         const response = await fetch('/api/notify-interview', {
+//             method: 'POST',
+//             headers: {
+//             'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ email, details }),
+//         });
 
-        const data = await response.json();
-        if (response.ok) {
-            alert(data.message);
-        } else {
-            alert('Failed to send notification: ' + data.error);
-        }
-    }
+//         const data = await response.json();
+//         if (response.ok) {
+//             alert(data.message);
+//         } else {
+//             alert('Failed to send notification: ' + data.error);
+//         }
+//     }
 
     return (
         <div className="w-full p-4">
