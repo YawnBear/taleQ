@@ -5,6 +5,8 @@ https://tale-q.vercel.app/
 
 # Things to do : 
 - file type validation for cv when uploading (only allow pdf, png)
+- zip file for resume, extract then only upload
+- job position can edit and delete
 - user login (for companies)
 - store resume's into db 
 
@@ -25,4 +27,4 @@ npm install
 # Start the application
 npm run dev
 ```
-3. Running it on local host:3000
+3. Running it on [http://localhost:3000/](http://localhost:3000/)
