@@ -2,6 +2,7 @@ import { useState } from "react";
 import { FileUpload } from "@/components/ui/UploadFile";
 import { Switch } from "@/components/ui/switch";
 import SearchBar from "./SearchBar";
+import JobPosting from "./JobPosting";
 
 export default function JobDesc() {
     const [toggleForm, setToggleForm] = useState(false);
@@ -104,6 +105,7 @@ export default function JobDesc() {
                 <div className="text-center h-100 flex items-center justify-center border">
                     <button onClick={handleToggleForm} className="justify-center button">+</button>
                 </div>
+                <JobPosting />
 
                 {toggleForm && (
                     <div className="fixed inset-0 backdrop-blur-sm bg-white/5 flex items-center justify-center z-50 transition-opacity">

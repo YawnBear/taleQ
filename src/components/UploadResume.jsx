@@ -20,7 +20,7 @@ export default function UploadResume() {
         formData.append("file", uploadedFiles[0]);
 
         try {
-            const response = await fetch("/api/uploadResume", {
+            const response = await fetch("/api/upload-resume", {
                 method: "POST",
                 body: formData,
             });
