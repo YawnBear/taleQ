@@ -3,9 +3,12 @@
 import { useEffect, useState } from "react";
 import JobDesc from "@/components/JobDesc";
 import UploadResume from "@/components/UploadResume"
+import TextField from "@mui/material/TextField";
+import JamAiTable from "@/components/JamAiTable";
 
 export default function Home() {
     const [tableData, setTableData] = useState();
+    const [currentPage, setCurrentPage] = useState("jobPosition");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -25,13 +28,52 @@ export default function Home() {
     }, []);
 
     return (
-        <main className="flex min-h-screen flex-col p-24">
-            <div className="flex items-center justify-between">
-                <JobDesc />
-                <UploadResume />
-
-
-            </div>
-        </main>
+        <>
+        {/* Sidebar */}
+        <div className="flex h-screen">
+            <nav className="w-48 bg-gray-100 p-4 border-r border-gray-300">
+                <ul className="space-y-2">
+                    <li>
+                        <img src="/logo.png" alt="Logo" className=" mx-auto" onClick={() => setCurrentPage("jobPosition")}/>
+                    </li>
+                    <li className="mt-20">
+                        <button
+                        className={`w-full text-left px-4 py-2 rounded ${
+                            currentPage === "jobPosition" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                        }`}
+                        onClick={() => setCurrentPage("jobPosition")}
+                        >
+                        Job Position
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                        className={`w-full text-left px-4 py-2 rounded ${
+                            currentPage === "Resume" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                        }`}
+                        onClick={() => setCurrentPage("Resume")}
+                        >
+                        Resume
+                        </button>
+                    </li>
+                    <li>
+                        <button
+                        className={`w-full text-left px-4 py-2 rounded ${
+                            currentPage === "Shortlisted" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                        }`}
+                        onClick={() => setCurrentPage("Shortlisted")}
+                        >
+                        Shortlisted
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+            <main className="flex-1">
+                {currentPage === "jobPosition" && <JobDesc />}
+                {currentPage === "Resume" && <UploadResume />}
+                {currentPage === "Shortlisted" && <JamAiTable />}
+            </main>
+        </div>
+        </>
     );
 }

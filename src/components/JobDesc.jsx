@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { FileUpload } from "./ui/UploadFile";
+import { Switch } from "@/components/ui/switch"
+import SearchBar from "./SearchBar";
+
 
 export default function JobDesc() {
     
@@ -10,6 +14,8 @@ export default function JobDesc() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
     const [successMessage, setSuccessMessage] = useState("");
+    const [mode, setMode] = useState("manual"); // or "file"
+
 
     // Handle form submission
     const handleSubmit = async (e) => {
@@ -78,82 +84,114 @@ export default function JobDesc() {
 
     return (
         <div className="w-full p-4">
-            <div className="grid grid-cols-4 gap-4">
-                <div className="text-center">
-                    <button onClick={handleToggleForm} className="mt-4">+</button>
+            <div className="mt-10 w-1/2 mx-auto">
+                <SearchBar />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-10 pt-15">
+                <div className="text-center h-100 flex items-center justify-center border">
+                    <button onClick={handleToggleForm} className="justify-center button">+</button>
                 </div>
+
                 {toggleForm && (
                     <div className="fixed inset-0 backdrop-blur-sm bg-white/5 flex items-center justify-center z-50 transition-opacity">
-                        <div className="bg-black p-8 rounded-2xl shadow-2xl border border-gray-300 w-full max-w-md text-center">
-                        <h2 className="text-2xl font-semibold mb-4 ">Create New Job</h2>
-                        
-                        {/* Form elements or inputs can go here */}
-                        <form className="space-y-4" onSubmit={handleSubmit}>
-                            <div className="text-left">
-                                <label className="block text-white mb-1" htmlFor="jobPosition">Job Position</label>
-                                <input
-                                id="jobPosition"
-                                type="text"
-                                className="w-full px-3 py-2 rounded border border-gray-400 focus:outline-none"
-                                placeholder="Enter job position"
-                                value={jobPosition}
-                                onChange={(e) => setJobPosition(e.target.value)}
+                        <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 w-full max-w-md text-center">
+                            <h2 className="text-2xl font-semibold mb-4 text-gray-800">Create New Job</h2>
+                            <div className="mb-4 text-left flex items-center gap-2">
+                                <Switch
+                                    id="switch"
+                                    checked={mode === "file"}
+                                    onCheckedChange={mode === "file" ? () => setMode("manual") : () => setMode("file")}
                                 />
+                                <label htmlFor="switch" className="text-gray-700">File Upload</label>
                             </div>
-                            <div className="text-left">
-                                <label className="block text-white mb-1" htmlFor="jobDesc">Job Description</label>
-                                <textarea
-                                id="jobDesc"
-                                className="w-full px-3 py-2 rounded border border-gray-400 focus:outline-none"
-                                placeholder="Enter job description"
-                                rows={4}
-                                value={jobDesc}
-                                onChange={(e) => setJobDesc(e.target.value)}
-                                />
-                            </div>
-                            <div className="text-left">
-                                <label className="block text-white mb-1" htmlFor="skillSet">Skill Set Required</label>
-                                <input
-                                id="skillSet"
-                                type="text"
-                                className="w-full px-3 py-2 rounded border border-gray-400 focus:outline-none"
-                                placeholder="Enter skill set required"
-                                value={skillSet}
-                                onChange={(e) => setskillSet(e.target.value)}
-                                />
-                            </div>
-                            <div className="text-left">
-                                <label className="block text-white mb-1" htmlFor="remarks">Remarks</label>
-                                <input
-                                id="remarks"
-                                type="text"
-                                className="w-full px-3 py-2 rounded border border-gray-400 focus:outline-none"
-                                placeholder="Enter remarks"
-                                value={remarks}
-                                onChange={(e) => setRemarks(e.target.value)}
-                                />
-                            </div>
+                            
+                            {mode === "manual" && (
+                                <form className="space-y-4" onSubmit={handleSubmit}>
+                                    <div className="text-left">
+                                        <label className="block text-gray-700 mb-1 text-sm font-medium" htmlFor="jobPosition">
+                                            Job Position
+                                        </label>
+                                        <input
+                                            id="jobPosition"
+                                            type="text"
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
+                                            placeholder="Enter job position"
+                                            value={jobPosition}
+                                            onChange={(e) => setJobPosition(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="text-left">
+                                        <label className="block text-gray-700 mb-1 text-sm font-medium" htmlFor="jobDesc">
+                                            Job Description
+                                        </label>
+                                        <textarea
+                                            id="jobDesc"
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
+                                            placeholder="Enter job description"
+                                            rows={4}
+                                            value={jobDesc}
+                                            onChange={(e) => setJobDesc(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="text-left">
+                                        <label className="block text-gray-700 mb-1 text-sm font-medium" htmlFor="skillSet">
+                                            Skill Set Required
+                                        </label>
+                                        <input
+                                            id="skillSet"
+                                            type="text"
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
+                                            placeholder="Enter skill set required"
+                                            value={skillSet}
+                                            onChange={(e) => setskillSet(e.target.value)}
+                                        />
+                                    </div>
+                                    <div className="text-left">
+                                        <label className="block text-gray-700 mb-1 text-sm font-medium" htmlFor="remarks">
+                                            Remarks
+                                        </label>
+                                        <input
+                                            id="remarks"
+                                            type="text"
+                                            className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
+                                            placeholder="Enter remarks"
+                                            value={remarks}
+                                            onChange={(e) => setRemarks(e.target.value)}
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="w-full bg-gradient-to-r from-green-600 to-[#1c843e] text-white px-6 py-2.5 rounded-md hover:from-[#1c843e] hover:to-green-600 transition-all duration-300 font-medium shadow-md hover:shadow-lg disabled:opacity-50"
+                                        disabled={isSubmitting}
+                                    >
+                                        {isSubmitting ? "Submitting..." : "Submit"}
+                                    </button>
+                                    {successMessage && <div className="mt-4 text-green-600">{successMessage}</div>}
+                                    {errorMessage && <div className="mt-4 text-red-500">{errorMessage}</div>}
+                                </form>
+                            )}
+                
+                            {mode === "file" && (
+                                <div className="text-left">
+                                    <label className="block text-gray-700 mb-1 text-sm font-medium">
+                                        Upload Job Description File
+                                    </label>
+                                    <div className="border-2 border-dashed border-gray-200 rounded-md p-4 hover:border-green-600 transition-colors">
+                                        <FileUpload />
+                                    </div>
+                                </div>
+                            )}
+                
                             <button
-                            type="submit"
-                            className="w-full mt-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
-                            disabled={isSubmitting}
-                            onClick={() => notifyCandidate("dltyx04@gmail.com", "Interview scheduled for 10 AM tomorrow")} //calling email function
+                                onClick={() => { handleToggleForm(); setSuccessMessage(""); }}
+                                className="mt-6 px-6 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                             >
-                                {isSubmitting ? "Submitting..." : "Submit"}
+                                Close
                             </button>
-                            {successMessage && <div className="mt-4 text-green-500">{successMessage}</div>}
-                            {errorMessage && <div className="mt-4 text-red-500">{errorMessage}</div>}
-                            </form>
-
-                        <button
-                            onClick={() => { handleToggleForm(); setSuccessMessage(""); }}
-                            className="mt-4 px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition border border-blue-500"
-                        >
-                            Close
-                        </button>
                         </div>
                     </div>
                 )}
+
             </div>
         </div>
     );
