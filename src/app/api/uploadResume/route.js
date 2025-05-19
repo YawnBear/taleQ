@@ -112,10 +112,10 @@ export async function POST(req) {
         'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
       },
       body: JSON.stringify({
-        table_id: 'CV',
+        table_id: process.env.JAMAI_ACTION_TABLE_ID,
         data: [
           {
-            uploaded_file: fileUrl,
+            cv: fileUrl,
           },
         ],
       }),
