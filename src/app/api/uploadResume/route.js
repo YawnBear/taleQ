@@ -115,7 +115,7 @@ export async function POST(req) {
         table_id: process.env.JAMAI_ACTION_TABLE_ID,
         data: [
           {
-            cv: fileUrl,
+            [process.env.JAMAI_ACTION_COLUMN_ID]: fileUrl,
           },
         ],
       }),
