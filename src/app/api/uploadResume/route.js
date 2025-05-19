@@ -76,7 +76,7 @@ export async function POST(req) {
     fd.append('file', file, file.name);
 
     // Step 1: Upload file to Jamaibase
-    const uploadRes = await fetch('https://api.jamaibase.com/api/v1/files/upload/', {
+    const uploadRes = await fetch('https://api.jamaibase.com/api/v1/files/upload', {
       method: 'POST',
       headers: {
         accept: 'application/json',
