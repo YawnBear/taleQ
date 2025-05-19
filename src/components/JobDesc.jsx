@@ -58,7 +58,7 @@ export default function JobDesc() {
             formData.append("file", pdfBlob, jobPosition + ".pdf");
             formData.append("jobPosition", jobPosition);
 
-            const uploadResponse = await fetch("/api/jobs", {
+            const uploadResponse = await fetch("/api/upload-jobs", {
                 method: "POST",
                 body: formData,
             });
@@ -72,7 +72,7 @@ export default function JobDesc() {
             formData.append("file", uploadedFiles[0]);
             formData.append("jobPosition", jobPosition);
 
-            const uploadResponse = await fetch("/api/jobs", {
+            const uploadResponse = await fetch("/api/upload-jobs", {
                 method: "POST",
                 body: formData,
             });

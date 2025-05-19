@@ -10,8 +10,8 @@ export async function POST(request) {
       return NextResponse.json({ message: 'Missing file or jobPosition' }, { status: 400 });
     }
 
-    const formData = new FormData(); // ✅ use a lowercase variable name
-    formData.append('file', file, jobPosition + '.pdf'); // ✅ send original file
+    const formData = new FormData();
+    formData.append('file', file, jobPosition + '.pdf'); 
     formData.append('table_id', process.env.JAMAI_KNOWLEDGE_TABLE_ID);
 
     const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/knowledge/embed_file', {
@@ -20,7 +20,6 @@ export async function POST(request) {
         accept: 'application/json',
         authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
         'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
-        // ✅ Do NOT set Content-Type here — the browser will do it
       },
       body: formData,
     });
