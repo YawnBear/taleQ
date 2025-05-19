@@ -8,6 +8,7 @@ import fetch from 'node-fetch';
 export async function POST(req) {
   try {
     const formData = await req.formData();
+
     const file = formData.get("file");
 
     if (!file) {
@@ -27,7 +28,7 @@ export async function POST(req) {
     JamAIFormData.append('table_id', 'test1')
 
 
-    const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/knowledge/upload_file', {
+    const response = await fetch('https://api.jamaibase.com/api/v1/files/upload', {
         method: 'POST',
         body: JamAIFormData,
         headers: {
@@ -46,6 +47,7 @@ export async function POST(req) {
     }
 
     const result = await response.json();
+    console.log(result)
 
     return NextResponse.json({
       message: "File uploaded and forwarded successfully!",
