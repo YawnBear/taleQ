@@ -6,10 +6,11 @@ import {
 import { useEffect, useState } from "react";
 import JobDetailsOverlay from "./JobDetailsOverlay";
 
-export default function JobPosting({handleToggleForm}) {
+export default function JobPosting({handleToggleForm, searchQuery}) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedJobId, setSelectedJobId] = useState(null);
+  const [filteredJobs, setFilteredJobs] = useState([]);
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -37,14 +38,24 @@ export default function JobPosting({handleToggleForm}) {
     fetchJobs();
   }, []);
 
-  if (loading) return <p>Loading job info...</p>;
+
+  useEffect(() => {
+    const filtered = jobs.filter((job) => {
+      if (!job || !job.jobPosition) return false;
+      if (!searchQuery) return true;
+      return job.jobPosition.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+    setFilteredJobs(filtered);
+  }, [jobs, searchQuery]);
+
+    if (loading) return <p>Loading job info...</p>;
+      console.log("Current jobs:", jobs);
+console.log("Search query:", searchQuery);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[10vh] bg-[var(--background)] py-8">
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
-        {jobs
-          .filter((job) => job.jobPosition)
-          .map((job) => (
+        {filteredJobs.map((job) => (
             <Card
               key={job.ID}
               className="w-full h-[120px] shadow-lg hover:shadow-xl transition-shadow duration-300 border border-green-400 bg-white hover:border-green-500 group cursor-pointer"

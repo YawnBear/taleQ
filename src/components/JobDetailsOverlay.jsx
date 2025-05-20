@@ -8,7 +8,7 @@ export default function JobDetailsOverlay({ jobId, onClose }) {
     const fetchDetails = async () => {
       try {
         const res = await fetch(
-          `https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows/${jobId}?columns=job%20position&columns=job%20description&columns=skill%20set&columns=remarks`,
+          `https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows/${jobId}?columns=jobPosition&columns=jobDescription&columns=skillSet&columns=remarks`,
           {
             method: "GET",
             headers: {
@@ -20,18 +20,18 @@ export default function JobDetailsOverlay({ jobId, onClose }) {
         );
         const data = await res.json();
         setDetails(data);
+        console.log("Job Details:", data);
       } catch (error) {
         console.error("Error:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchDetails();
   }, [jobId]);
 
   if (!details && !loading) return null;
-
+  console.log("Current details state:", details);
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"

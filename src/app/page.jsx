@@ -31,11 +31,13 @@ export default function Home() {
         <>
         {/* Sidebar */}
         <div className="flex h-screen">
-            <nav className="w-48 bg-gray-100 p-4 border-r border-gray-300">
+            <nav className="w-48 bg-gray-100 border-r border-gray-300">
                 <ul className="space-y-2">
-                    <li>
+                    <div>
+                    <li className="p-4">
                         <img src="/logo.png" alt="Logo" className=" mx-auto" onClick={() => setCurrentPage("jobPosition")}/>
                     </li>
+                    </div>
                     <li className="mt-20">
                         <button
                         className={`w-full text-left px-4 py-2 rounded ${

@@ -15,6 +15,7 @@ export default function JobDesc() {
     const [successMessage, setSuccessMessage] = useState("");
     const [mode, setMode] = useState("manual");
     const [uploadedFiles, setUploadedFiles] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
 
     const handleToggleForm = () => {
         setToggleForm(!toggleForm);
@@ -99,10 +100,10 @@ export default function JobDesc() {
     return (
         <div className="w-full p-4">
             <div className="mt-10 w-1/2 mx-auto">
-                <SearchBar />
+                <SearchBar value={searchQuery} onChange={setSearchQuery}/>
             </div>
             <div className="px-10 pt-15">
-                <JobPosting handleToggleForm={handleToggleForm}/>
+                <JobPosting handleToggleForm={handleToggleForm} searchQuery={searchQuery}/>
                 
 
                 {toggleForm && (
