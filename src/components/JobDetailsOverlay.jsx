@@ -8,7 +8,7 @@ export default function JobDetailsOverlay({ jobId, onClose }) {
     const fetchDetails = async () => {
       try {
         const res = await fetch(
-          `https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows/${jobId}?columns=jobPosition&columns=jobDescription&columns=skillSet&columns=remarks`,
+          `https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows/${jobId}?columns=job%20position&columns=job%20description&columns=skill%20set&columns=remarks`,
           {
             method: "GET",
             headers: {
