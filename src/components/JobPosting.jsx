@@ -21,8 +21,8 @@ export default function JobPosting({handleToggleForm}) {
             headers: {
               accept: "application/json",
               authorization:
-                "Bearer jamai_sk_b5ffdda1a17ea481d5fb9f35de8e0a8c805cbcc233863536",
-              "X-PROJECT-ID": "proj_1b97f588685c61db99c27d05",
+                `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
+                "X-PROJECT-ID": process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID,
             },
           }
         );
