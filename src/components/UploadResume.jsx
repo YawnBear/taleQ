@@ -10,18 +10,49 @@ export default function UploadResume() {
     const [resumes, setResumes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showShortlisted, setShowShortlisted] = useState(false);
+    const [selectedColumns, setSelectedColumns] = useState({
+        name: true,
+        birthdate: false,
+        location: false,
+        'contact number': false,
+        'email address': false,
+        'contact links': false,
+        education: true,
+        'job experience': true,
+        'curriculum activities': false,
+        projects: false,
+        skills: true,
+        achievements: false,
+        shortlisted: true
+    });
+
+    const handleColumnChange = (columnName) => {
+        if (columnName === 'name' || columnName === 'shortlisted') return;
+        setSelectedColumns(prev => ({
+            ...prev,
+            [columnName]: !prev[columnName]
+        }));
+    };
 
     useEffect(() => {
         const fetchResumes = async () => {
             try {
-                const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/resume1/rows?columns=name&columns=contact%20number&columns=email%20address&columns=job%20experience&columns=projects&columns=skills&columns=shortlisted', {
-                    method: 'GET',
-                    headers: {
-                        accept: 'application/json',
-                        authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
-                        'X-PROJECT-ID': process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID
+                const columnsQuery = Object.entries(selectedColumns)
+                    .filter(([_, isSelected]) => isSelected)
+                    .map(([column]) => `columns=${encodeURIComponent(column)}`)
+                    .join('&');
+
+                const response = await fetch(
+                    `https://api.jamaibase.com/api/v1/gen_tables/action/resume1/rows?${columnsQuery}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            accept: 'application/json',
+                            authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
+                            'X-PROJECT-ID': process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID
+                        }
                     }
-                });
+                );
                 const data = await response.json();
                 setResumes(data.items || []);
             } catch (error) {
@@ -32,11 +63,10 @@ export default function UploadResume() {
         };
 
         fetchResumes();
-    }, []);
+    }, [selectedColumns]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!uploadedFiles.length) {
             alert("Please upload a file.");
             return;
@@ -50,7 +80,6 @@ export default function UploadResume() {
                 method: "POST",
                 body: formData,
             });
-
             const result = await response.json();
             alert(result.message);
             setShowOverlay(false);
@@ -60,32 +89,59 @@ export default function UploadResume() {
         }
     };
 
-const filteredResumes = resumes.filter(resume => {
-    // First check if resume exists
-    if (!resume) return false;
+    const filteredResumes = resumes.filter(resume => {
+        if (!resume) return false;
+        if (showShortlisted && resume.shortlisted?.toLowerCase() !== 'yes') return false;
+        
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            return (
+                resume.name?.toLowerCase().includes(query) ||
+                resume['contact number']?.toLowerCase().includes(query) ||
+                resume['email address']?.toLowerCase().includes(query) ||
+                resume['job experience']?.toLowerCase().includes(query) ||
+                resume.skills?.toLowerCase().includes(query)
+            );
+        }
+        return true;
+    });
 
-    // Check shortlisted filter
-    if (showShortlisted && resume.shortlisted?.toLowerCase() !== 'yes') return false;
+    const handleStatusChange = async (rowId, newStatus) => {
+        try {
+            const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/rows/update', {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                    authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
+                    'X-PROJECT-ID': process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID
+                },
+                body: JSON.stringify({
+                    data: { shortlisted: newStatus },
+                    table_id: 'resume1',
+                    row_id: rowId
+                })
+            });
 
-    // Check search query
-    if (searchQuery) {
-        const query = searchQuery.toLowerCase();
-        return (
-            resume.name?.toLowerCase().includes(query) ||
-            resume['contact number']?.toLowerCase().includes(query) ||
-            resume['email address']?.toLowerCase().includes(query) ||
-            resume['job experience']?.toLowerCase().includes(query) ||
-            resume.skills?.toLowerCase().includes(query)
-        );
-    }
+            if (!response.ok) throw new Error('Failed to update status');
 
-    return true;
-});
+            const updatedResumes = resumes.map(resume => 
+                resume.ID === rowId 
+                    ? { ...resume, shortlisted: newStatus }
+                    : resume
+            );
+            setResumes(updatedResumes);
+        } catch (error) {
+            console.error('Error updating status:', error);
+            alert('Failed to update status');
+        }
+    };
+
+    if (loading) return <div className="w-full h-screen flex items-center justify-center">Loading...</div>;
 
     return (
         <>
-            {/* Search and Filter Controls */}
-            <div className="w-full max-w-7xl mx-auto px-4 py-8">
+            <div className="w-full max-w-[100rem] mx-auto px-2 py-8">
                 <div className="flex items-center justify-between mb-6 mt-3">
                     <div className="w-1/2">
                         <SearchBar value={searchQuery} onChange={setSearchQuery}/>
@@ -102,58 +158,81 @@ const filteredResumes = resumes.filter(resume => {
                     </div>
                 </div>
 
-                {/* Resume Table */}
+                <div className="mb-6 bg-white p-4 rounded-lg shadow">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3">Display Columns:</h3>
+                    <div className="flex flex-wrap gap-2">
+                        {Object.entries(selectedColumns).map(([column, isSelected]) => (
+                            <button 
+                                key={column}
+                                onClick={() => handleColumnChange(column)}
+                                disabled={column === 'name' || column === 'shortlisted'}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200
+                                    ${isSelected
+                                        ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                    } ${(column === 'name' || column === 'shortlisted') 
+                                        ? 'cursor-not-allowed bg-green-100 text-green-800' 
+                                        : 'cursor-pointer'}`}
+                            >
+                                <span className="capitalize">
+                                    {column}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
                 <div className="bg-white rounded-lg shadow overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Name
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Contact
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Experience
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Skills
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
+                                {Object.entries(selectedColumns)
+                                    .filter(([_, isSelected]) => isSelected)
+                                    .map(([column]) => (
+                                        <th 
+                                            key={column}
+                                            className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                        >
+                                            {column}
+                                        </th>
+                                    ))}
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                             {filteredResumes.map((resume, index) => (
                                 <tr key={index} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {resume.name}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {resume['contact number']}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                        {resume['email address']}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                                        {resume['job experience']}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                                        {resume.skills}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                            resume.shortlisted?.toLowerCase() === 'yes' 
-                                                ? 'bg-green-100 text-green-800' 
-                                                : 'bg-gray-100 text-gray-800'
-                                        }`}>
-                                            {resume.shortlisted?.toLowerCase() === 'yes' ? 'Shortlisted' : 'Pending'}
-                                        </span>
-                                    </td>
+                                    {Object.entries(selectedColumns)
+                                        .filter(([_, isSelected]) => isSelected)
+                                        .map(([column]) => (
+                                            <td 
+                                                key={column}
+                                                className="px-4 py-4 text-sm text-gray-500"
+                                            >
+                                                {column === 'shortlisted' ? (
+                                                    <div className="flex justify-center">
+                                                        <select
+                                                            value={resume.shortlisted?.toLowerCase() || 'no'}
+                                                            onChange={(e) => handleStatusChange(resume.ID, e.target.value)}
+                                                            className={`py-1.5 rounded-full text-xs font-medium cursor-pointer border-0 outline-none w-24 text-center
+                                                                ${resume.shortlisted?.toLowerCase() === 'yes' 
+                                                                    ? 'bg-green-100 text-green-800 hover:bg-green-200' 
+                                                                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}
+                                                                transition-colors duration-200`}
+                                                            style={{ WebkitAppearance: 'none', appearance: 'none' }}
+                                                        >
+                                                            <option value="no" className="bg-gray-100 text-gray-800 font-medium">
+                                                                Pending
+                                                            </option>
+                                                            <option value="yes" className="bg-green-100 text-green-800 font-medium">
+                                                                Shortlisted
+                                                            </option>
+                                                        </select>
+                                                    </div>
+                                                ) : (
+                                                    resume[column]
+                                                )}
+                                            </td>
+                                        ))}
                                 </tr>
                             ))}
                         </tbody>
@@ -161,7 +240,6 @@ const filteredResumes = resumes.filter(resume => {
                 </div>
             </div>
 
-            {/* Upload Button */}
             <button
                 onClick={() => setShowOverlay(true)}
                 className="fixed bottom-8 right-8 w-14 h-14 rounded-full 
@@ -175,7 +253,6 @@ const filteredResumes = resumes.filter(resume => {
                 +
             </button>
 
-            {/* Upload Overlay */}
             {showOverlay && (
                 <div
                     className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"

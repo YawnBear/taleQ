@@ -73,7 +73,7 @@ export default function Home() {
             <main className="flex-1">
                 {currentPage === "jobPosition" && <JobDesc />}
                 {currentPage === "Resume" && <UploadResume />}
-                {currentPage === "Shortlisted" && <ResumeTable />}
+                {currentPage === "Shortlisted" && <p>dk man</p>}
             </main>
         </div>
         </>
