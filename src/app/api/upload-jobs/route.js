@@ -4,14 +4,13 @@ export async function POST(request) {
   try {
     const pdfData = await request.formData();
     const file = pdfData.get("file");
-    const jobPosition = pdfData.get("jobPosition");
 
-    if (!file || !jobPosition) {
-      return NextResponse.json({ message: 'Missing file or jobPosition' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ message: 'Missing file' }, { status: 400 });
     }
 
     const formData = new FormData();
-    formData.append('file', file, jobPosition + '.pdf'); 
+    formData.append('file', file,'job description file.pdf'); 
     formData.append('table_id', process.env.JAMAI_KNOWLEDGE_TABLE_ID);
 
     const response = await fetch('https://api.jamaibase.com/api/v1/gen_tables/knowledge/embed_file', {
