@@ -101,11 +101,9 @@ export default function JobDesc() {
             <div className="mt-10 w-1/2 mx-auto">
                 <SearchBar />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4 px-10 pt-15">
-                <div className="text-center h-100 flex items-center justify-center border">
-                    <button onClick={handleToggleForm} className="justify-center button">+</button>
-                </div>
-                <JobPosting />
+            <div className="px-10 pt-15">
+                <JobPosting handleToggleForm={handleToggleForm}/>
+                
 
                 {toggleForm && (
                     <div className="fixed inset-0 backdrop-blur-sm bg-white/5 flex items-center justify-center z-50 transition-opacity">

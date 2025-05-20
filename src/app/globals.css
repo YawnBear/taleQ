@@ -66,3 +66,10 @@ textarea:focus-visible {
   box-shadow: 0 0 0 3px rgba(52, 168, 90, 0.25);
   outline: none;
 }
+
+.modal-backdrop {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000;
+  will-change: opacity;
+}
