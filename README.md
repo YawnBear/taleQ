@@ -3,14 +3,21 @@ talent acquisition app uses ai to fasten the process of screening through resume
 
 https://tale-q.vercel.app/
 
+# Features 
+- Resume Screening
+- AI-based candidate matching and scoring
+- Spam or fake resume detection
+- Customizable job requirements settings 
+
 # Things to do : 
 - file type validation for cv when uploading (only allow pdf, png)
 - zip file for resume, extract then only upload
 - job position can edit and delete
 - user login (for companies)
 - store resume's into db 
-- skill gap analysis (email candidate why they didnt get selected and how could they do better ?)
-- take resume from email 
+- take resume from email
+- interview scheduling
+- calendar view
 
 
 # Installation Guide 
