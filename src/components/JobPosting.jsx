@@ -12,6 +12,7 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [filteredJobs, setFilteredJobs] = useState([]);
 
+  // Add polling for job updates
   useEffect(() => {
     const fetchJobs = async () => {
       try {
@@ -21,9 +22,8 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
             method: "GET",
             headers: {
               accept: "application/json",
-              authorization:
-                `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
-                "X-PROJECT-ID": process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID,
+              authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
+              "X-PROJECT-ID": process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID,
             },
           }
         );
@@ -35,10 +35,18 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
         setLoading(false);
       }
     };
+
+    // Initial fetch
     fetchJobs();
-  }, []);
 
+    // Set up polling interval (every 2 seconds)
+    const pollInterval = setInterval(fetchJobs, 2000);
 
+    // Cleanup function to clear interval when component unmounts
+    return () => clearInterval(pollInterval);
+  }, []); // Empty dependency array since we want to set up polling only once
+
+  // Filter jobs based on search query
   useEffect(() => {
     const filtered = jobs.filter((job) => {
       if (!job || !job.jobPosition) return false;
@@ -48,7 +56,11 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
     setFilteredJobs(filtered);
   }, [jobs, searchQuery]);
 
-    if (loading) return <p>Loading job info...</p>;
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-[10vh]">
+      <p className="text-gray-600">Loading job info...</p>
+    </div>
+  );
       console.log("Current jobs:", jobs);
 console.log("Search query:", searchQuery);
 

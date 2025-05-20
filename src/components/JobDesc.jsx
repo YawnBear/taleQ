@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FileUpload } from "@/components/ui/UploadFile";
 import { Switch } from "@/components/ui/switch";
 import SearchBar from "./SearchBar";
@@ -16,18 +16,20 @@ export default function JobDesc() {
     const [mode, setMode] = useState("manual");
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [lastUpdate, setLastUpdate] = useState(Date.now());
 
     const handleToggleForm = () => {
         setToggleForm(!toggleForm);
         setSuccessMessage("");
         setErrorMessage("");
     };
+    
 
-    const handleSubmit = async (e) => {
-
+const handleSubmit = async (e) => {
     setIsSubmitting(true);
     setErrorMessage("");
     setSuccessMessage("");
+    e.preventDefault();
 
     try {
         if (mode === "manual") {
@@ -38,35 +40,57 @@ export default function JobDesc() {
                 remarks,
             };
 
+            // First generate the PDF
             const generateResponse = await fetch("/api/generate-pdf", {
                 method: "POST",
                 headers: {
-                "Content-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify(jobData),
+                body: JSON.stringify(jobData), // Make sure data is properly stringified
             });
+
+            if (!generateResponse.ok) {
+                const error = await generateResponse.json();
+                throw new Error(error.message || "Failed to generate PDF");
+            }
 
             const generateData = await generateResponse.json();
-            if (!generateResponse.ok) throw new Error(generateData.message || "Failed to generate PDF");
 
-            // Convert base64 to a Blob
-            const pdfBlob = new Blob([Uint8Array.from(atob(generateData.base64), c => c.charCodeAt(0))], {
-                type: "application/pdf",
-            });
+            // Create PDF blob from base64
+            const binaryStr = atob(generateData.base64);
+            const bytes = new Uint8Array(binaryStr.length);
+            for (let i = 0; i < binaryStr.length; i++) {
+                bytes[i] = binaryStr.charCodeAt(i);
+            }
+            const pdfBlob = new Blob([bytes], { type: "application/pdf" });
 
+            // Create FormData and append file
             const formData = new FormData();
-            formData.append("file", pdfBlob, jobPosition + ".pdf");
+            formData.append("file", pdfBlob, `${jobPosition}.pdf`);
             formData.append("jobPosition", jobPosition);
 
+            // Upload to server
             const uploadResponse = await fetch("/api/upload-jobs", {
                 method: "POST",
                 body: formData,
             });
 
-            const uploadData = await uploadResponse.json();
-            if (!uploadResponse.ok) throw new Error(uploadData.message || "Failed to upload to Jamaibase");
+            if (!uploadResponse.ok) {
+                const error = await uploadResponse.json();
+                throw new Error(error.message || "Failed to upload to Jamaibase");
+            }
+
+            setSuccessMessage("Job submitted and uploaded successfully!");
+            // Reset form
+            setJobPosition("");
+            setJobDesc("");
+            setSkillSet("");
+            setRemarks("");
+            
         } else if (mode === "file") {
-            if (!uploadedFiles.length) throw new Error("Please upload a PDF file.");
+            if (!uploadedFiles.length) {
+                throw new Error("Please upload a PDF file.");
+            }
 
             const formData = new FormData();
             formData.append("file", uploadedFiles[0]);
@@ -77,16 +101,15 @@ export default function JobDesc() {
                 body: formData,
             });
 
-            const uploadData = await uploadResponse.json();
-            if (!uploadResponse.ok) throw new Error(uploadData.message || "File upload failed");
-        }
+            if (!uploadResponse.ok) {
+                const error = await uploadResponse.json();
+                throw new Error(error.message || "File upload failed");
+            }
 
-        setSuccessMessage("Job submitted and uploaded successfully!");
-        setJobPosition("");
-        setJobDesc("");
-        setskillSet("");
-        setRemarks("");
-        setUploadedFiles([]);
+            setSuccessMessage("File uploaded successfully!");
+            setUploadedFiles([]);
+            setJobPosition("");
+        }
     } catch (error) {
         console.error("Submission error:", error);
         setErrorMessage(error.message || "Something went wrong");
@@ -94,6 +117,29 @@ export default function JobDesc() {
         setIsSubmitting(false);
     }
 };
+
+    useEffect(() => {
+        const fetchJobs = async () => {
+            try {
+                const response = await fetch('/api/jobs'); // Your jobs API endpoint
+                const data = await response.json();
+                setJobs(data);
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+            }
+        };
+
+        // Initial fetch
+        fetchJobs();
+
+        // Set up polling interval (every 2 seconds)
+        const pollInterval = setInterval(() => {
+            fetchJobs();
+        }, 2000);
+
+        // Cleanup on unmount
+        return () => clearInterval(pollInterval);
+    }, [lastUpdate]);
 
 
     return (
