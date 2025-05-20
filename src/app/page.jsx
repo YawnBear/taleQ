@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import JobDesc from "@/components/JobDesc";
 import UploadResume from "@/components/UploadResume"
 import TextField from "@mui/material/TextField";
-import JamAiTable from "@/components/JamAiTable";
+import ResumeTable from "@/components/ResumeTable";
 
 export default function Home() {
     const [tableData, setTableData] = useState();
@@ -71,7 +71,7 @@ export default function Home() {
             <main className="flex-1">
                 {currentPage === "jobPosition" && <JobDesc />}
                 {currentPage === "Resume" && <UploadResume />}
-                {currentPage === "Shortlisted" && <JamAiTable />}
+                {currentPage === "Shortlisted" && <ResumeTable />}
             </main>
         </div>
         </>

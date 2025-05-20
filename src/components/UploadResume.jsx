@@ -35,30 +35,6 @@ export default function UploadResume() {
 
 return (
         <form onSubmit={handleSubmit} className="w-full max-w-xl mx-auto mt-10 space-y-6">
-            <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
-                    Name
-                </label>
-                <input
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
-                />
-            </div>
-
-            <div>
-                <label className="block mb-1 text-sm font-medium text-gray-700">
-                    Description
-                </label>
-                <textarea
-                    required
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent bg-white"
-                />
-            </div>
 
             <div className="border border-dashed border-gray-300 rounded-md p-4 hover:border-green-600 transition-colors">
                 <FileUpload onChange={(files) => setUploadedFiles(files)} />
