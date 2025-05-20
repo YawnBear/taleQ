@@ -35,7 +35,6 @@ export default function UploadResume() {
     }, []);
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
 
         if (!uploadedFiles.length) {
             alert("Please upload a file.");

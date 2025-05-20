@@ -24,7 +24,6 @@ export default function JobDesc() {
     };
 
     const handleSubmit = async (e) => {
-    e.preventDefault();
 
     setIsSubmitting(true);
     setErrorMessage("");
