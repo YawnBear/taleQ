@@ -61,25 +61,25 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
       <p className="text-gray-600">Loading job info...</p>
     </div>
   );
-      console.log("Current jobs:", jobs);
-console.log("Search query:", searchQuery);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[10vh] bg-[var(--background)] py-8">
       <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-4">
         {filteredJobs.map((job) => (
-            <Card
-              key={job.ID}
-              className="w-full h-[120px] shadow-lg hover:shadow-xl transition-shadow duration-300 border border-green-400 bg-white hover:border-green-500 group cursor-pointer"
-              onClick={() => setSelectedJobId(job.ID)}
-            >
-              <CardHeader className="h-full rounded-lg px-5 py-4 bg-white flex flex-col justify-center">
-                <CardTitle className="text-gray-800 text-xl font-semibold group-hover:text-green-600 transition-colors duration-300 line-clamp-2">
-                  {job.jobPosition || "Untitled Position"}
-                </CardTitle>
-              </CardHeader>
-            </Card>
-          ))}
+          <Card
+            key={job.ID}
+            className="w-full min-h-[120px] shadow-lg hover:shadow-xl transition-all duration-300 border border-green-400 bg-white hover:border-green-500 group cursor-pointer"
+            onClick={() => setSelectedJobId(job.ID)}
+          >
+            <CardHeader className="rounded-lg px-5 py-4 bg-white flex flex-col justify-center">
+              <CardTitle className="text-gray-800 text-xl font-semibold group-hover:text-green-600 transition-colors duration-300">
+                {job.jobPosition || "Untitled Position"}
+              </CardTitle>
+            </CardHeader>
+          </Card>
+        ))}
+        
+        {/* Add New Job Button - Keep fixed height */}
         <div className="w-full h-[120px] border-2 border-dashed border-green-300 rounded-lg hover:border-green-500 transition-colors duration-300">
           <button 
             onClick={handleToggleForm} 

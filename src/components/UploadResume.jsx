@@ -66,6 +66,7 @@ export default function UploadResume() {
     }, [selectedColumns]);
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
         if (!uploadedFiles.length) {
             alert("Please upload a file.");
             return;
@@ -94,13 +95,13 @@ export default function UploadResume() {
         
         if (searchQuery) {
             const query = searchQuery.toLowerCase();
-            return (
-                resume.name?.toLowerCase().includes(query) ||
-                resume['contact number']?.toLowerCase().includes(query) ||
-                resume['email address']?.toLowerCase().includes(query) ||
-                resume['job experience']?.toLowerCase().includes(query) ||
-                resume.skills?.toLowerCase().includes(query)
-            );
+            return Object.entries(selectedColumns)
+                .filter(([_, isSelected]) => isSelected) // Only search through selected columns
+                .some(([column]) => {
+                    const value = resume[column];
+                    if (!value) return false;
+                    return value.toString().toLowerCase().includes(query);
+                });
         }
         return true;
     });

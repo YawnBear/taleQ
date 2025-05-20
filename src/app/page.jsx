@@ -1,31 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import JobDesc from "@/components/JobDesc";
 import UploadResume from "@/components/UploadResume"
-import TextField from "@mui/material/TextField";
-import ResumeTable from "@/components/ResumeTable";
 
 export default function Home() {
-    const [tableData, setTableData] = useState();
     const [currentPage, setCurrentPage] = useState("jobPosition");
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await fetch("/api/jamai");
-                if (response.ok) {
-                    const data = await response.json();
-                    setTableData(data);
-                } else {
-                    console.error("Failed to fetch data:", response.statusText);
-                }
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            }
-        };
-        fetchData();
-    }, []);
 
     return (
         <>

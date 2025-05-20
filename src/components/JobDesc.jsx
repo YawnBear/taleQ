@@ -118,29 +118,6 @@ const handleSubmit = async (e) => {
     }
 };
 
-    useEffect(() => {
-        const fetchJobs = async () => {
-            try {
-                const response = await fetch('/api/jobs'); // Your jobs API endpoint
-                const data = await response.json();
-                setJobs(data);
-            } catch (error) {
-                console.error('Error fetching jobs:', error);
-            }
-        };
-
-        // Initial fetch
-        fetchJobs();
-
-        // Set up polling interval (every 2 seconds)
-        const pollInterval = setInterval(() => {
-            fetchJobs();
-        }, 2000);
-
-        // Cleanup on unmount
-        return () => clearInterval(pollInterval);
-    }, [lastUpdate]);
-
 
     return (
         <div className="w-full p-4">
