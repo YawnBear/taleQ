@@ -12,7 +12,7 @@ export default function Home() {
     return (
         <>
         <div className="flex h-screen">
-            <nav className="w-48 bg-gray-100 border-r border-gray-300 flex flex-col justify-between">
+            <nav className="fixed w-48 h-screen bg-gray-100 border-r border-gray-300 flex flex-col justify-between">
                 <div>
                     <ul className="space-y-2">
                         <div>
@@ -69,7 +69,7 @@ export default function Home() {
                     </button>
                 </div>
             </nav>
-            <main className="flex-1">
+            <main className="flex-1 ml-48">
                 {currentPage === "jobPosition" && <JobDesc />}
                 {currentPage === "Resume" && <UploadResume />}
                 {currentPage === "Calendar" && <p>dk man</p>}

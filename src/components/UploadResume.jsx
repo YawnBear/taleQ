@@ -43,6 +43,19 @@ export default function UploadResume() {
         autoSendEmails: false
     });
 
+    // Update the nextInterviewTime state initialization
+    const [nextInterviewTime, setNextInterviewTime] = useState(() => {
+        const savedTime = localStorage.getItem('nextInterviewTime');
+        if (savedTime) {
+            return new Date(savedTime);
+        }
+        // Default to next Monday at 10 AM if no saved time
+        const date = new Date();
+        date.setDate(date.getDate() + ((1 + 7 - date.getDay()) % 7));  // Next Monday
+        date.setHours(10, 0, 0, 0);  // Set to 10:00 AM
+        return date;
+    });
+
     useEffect(() => {
         const savedSettings = localStorage.getItem('userSettings');
         if (savedSettings) {
@@ -79,23 +92,6 @@ export default function UploadResume() {
                 );
                 const data = await response.json();
                 setResumes(data.items || []);
-
-                // Handle already shortlisted candidates when auto-email is enabled
-                if (emailSettings.autoSendEmails) {
-                    const shortlistedCandidates = (data.items || []).filter(
-                        resume => resume.shortlisted?.toLowerCase() === 'yes' && !notifiedCandidates.has(resume.ID)
-                    );
-
-                    // Send emails to shortlisted candidates who haven't been notified
-                    for (const candidate of shortlistedCandidates) {
-                        try {
-                            await handleAutomatedEmail(candidate);
-                            console.log('Sent automated email to previously shortlisted candidate:', candidate.name);
-                        } catch (error) {
-                            console.error('Failed to send automated email to:', candidate.name, error);
-                        }
-                    }
-                }
             } catch (error) {
                 console.error('Error fetching resumes:', error);
             } finally {
@@ -104,7 +100,7 @@ export default function UploadResume() {
         };
 
         fetchResumes();
-    }, [selectedColumns, emailSettings.autoSendEmails, notifiedCandidates]); // Added dependencies
+    }, [selectedColumns]); // Remove emailSettings and notifiedCandidates from dependencies
 
     // Add loading state
     const [isUploading, setIsUploading] = useState(false);
@@ -172,7 +168,6 @@ export default function UploadResume() {
 
             if (!response.ok) throw new Error('Failed to update status');
 
-            // Update local state with new status
             const updatedResumes = resumes.map(resume => 
                 resume.ID === rowId 
                     ? { ...resume, shortlisted: newStatus }
@@ -180,17 +175,20 @@ export default function UploadResume() {
             );
             setResumes(updatedResumes);
 
-            // Find the updated candidate
             const candidate = updatedResumes.find(r => r.ID === rowId);
-            console.log(candidate);
-            console.log(newStatus);
             
-            // Check if candidate exists and automated emails are enabled
-            if (candidate && emailSettings.autoSendEmails && newStatus === 'yes' && !notifiedCandidates.has(rowId)) {
-                console.log('Triggering automated email for:', candidate.name); // Debug log
+            // Use the correct notification ID format for checking
+            const notificationId = `${rowId}-${newStatus === 'yes' ? 'accept' : 'reject'}`;
+            
+            if (candidate && emailSettings.autoSendEmails && 
+                newStatus === 'yes' && 
+                !notifiedCandidates.has(notificationId)) {
                 try {
-                    await handleAutomatedEmail(candidate);
-                    console.log('Automated email sent successfully'); // Debug log
+                    await handleAutomatedEmail({
+                        ...candidate,
+                        ID: notificationId // Pass the correct notification ID
+                    });
+                    console.log('Automated email sent successfully');
                 } catch (error) {
                     console.error('Failed to send automated email:', error);
                 }
@@ -201,6 +199,7 @@ export default function UploadResume() {
         }
     };
 
+    // Update the handleAutomatedEmail function
     const handleAutomatedEmail = async (resume) => {
         if (notifiedCandidates.has(resume.ID)) {
             console.log('Email already sent to:', resume.name);
@@ -210,11 +209,39 @@ export default function UploadResume() {
         try {
             console.log('Sending automated email to:', resume.name, resume['email address']);
             
+            // Get current time and calculate next time
+            const currentTime = new Date(nextInterviewTime);
+            let newTime = new Date(currentTime);
+            newTime.setMinutes(newTime.getMinutes() + 90); // Add 1.5 hours
+
+            // If time goes past 5 PM, move to next day at 10 AM
+            if (newTime.getHours() >= 17) {
+                newTime.setDate(newTime.getDate() + 1);
+                newTime.setHours(10, 0, 0, 0);
+            }
+
+            // Skip weekends
+            while (newTime.getDay() === 0 || newTime.getDay() === 6) {
+                newTime.setDate(newTime.getDate() + 1);
+                if (newTime.getDay() === 1) { // If Monday, reset to 10 AM
+                    newTime.setHours(10, 0, 0, 0);
+                }
+            }
+
             // Define email content based on status
-            const emailContent = ['yes', 'interviewed', 'offered'].includes(resume.shortlisted?.toLowerCase()) 
+            const emailContent = resume.shortlisted?.toLowerCase() === 'yes' 
                 ? {
                     subject: "Interview Invitation from TaleQ",
-                    details: "Interview Schedule: Monday, 27 May 2025, 10:00 AM\n" +
+                    details: `Interview Schedule: ${currentTime.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    })}, ${currentTime.toLocaleTimeString('en-US', {
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    })}\n` +
                             "Location: TaleQ Office, Level 2, Building A\n" +
                             "Type: In-person interview\n" +
                             "Duration: 1 hour"
@@ -234,7 +261,7 @@ export default function UploadResume() {
                 body: JSON.stringify({
                     email: resume['email address'],
                     name: resume.name,
-                    subject: emailContent.subject, // Add subject field
+                    subject: emailContent.subject,
                     details: emailContent.details
                 }),
             });
@@ -242,6 +269,13 @@ export default function UploadResume() {
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'Failed to send automated email');
+            }
+
+            // Only update interview time for accepted candidates
+            if (resume.shortlisted?.toLowerCase() === 'yes') {
+                setNextInterviewTime(newTime);
+                localStorage.setItem('nextInterviewTime', newTime.toISOString());
+                console.log('Updated next interview time to:', newTime.toLocaleString());
             }
 
             // Add to notified set after successful send
@@ -257,6 +291,11 @@ export default function UploadResume() {
     useEffect(() => {
         localStorage.setItem('notifiedCandidates', JSON.stringify([...notifiedCandidates]));
     }, [notifiedCandidates]);
+
+    // Add effect to save nextInterviewTime changes
+    useEffect(() => {
+        localStorage.setItem('nextInterviewTime', nextInterviewTime.toISOString());
+    }, [nextInterviewTime]);
 
     if (loading) return <div className="w-full h-screen flex items-center justify-center">Loading...</div>;
 
