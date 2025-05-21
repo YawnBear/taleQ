@@ -1,5 +1,5 @@
 # taleQ
-talent acquisition app uses ai to fasten the process of screening through resumes 
+talent acquisition app uses ai to fasten the process of screening through resumes // 
 
 https://tale-q.vercel.app/
 
