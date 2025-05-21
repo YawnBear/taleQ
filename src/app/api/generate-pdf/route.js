@@ -14,7 +14,7 @@ export async function POST(request) {
 
     const { jobPosition, jobDesc, skillSet, remarks } = body;
 
-    if (!jobPosition || !jobDesc || !skillSet || !remarks) {
+    if (!jobPosition || !jobDesc || !skillSet) {
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 

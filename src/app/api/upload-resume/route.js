@@ -6,7 +6,7 @@ export async function POST(req) {
     const file = formData.get('file');
 
     if (!file) {
-      console.log('Missing fields:', { file, name, description });
+      console.log('Missing fields:', { file });
       return NextResponse.json({ message: 'Missing required fields' }, { status: 400 });
     }
 
