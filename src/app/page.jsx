@@ -38,16 +38,7 @@ export default function Home() {
                         Resume
                         </button>
                     </li>
-                    <li>
-                        <button
-                        className={`w-full text-left px-4 py-2 rounded ${
-                            currentPage === "Shortlisted" ? "bg-green-600 text-white" : "hover:bg-gray-200"
-                        }`}
-                        onClick={() => setCurrentPage("Shortlisted")}
-                        >
-                        Shortlisted
-                        </button>
-                    </li>
+
                 </ul>
             </nav>
             <main className="flex-1">
