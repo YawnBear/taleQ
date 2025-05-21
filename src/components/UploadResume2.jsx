@@ -11,10 +11,7 @@ export default function UploadResume() {
     const [resumes, setResumes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [showShortlisted, setShowShortlisted] = useState(false);
-    const [notifiedCandidates, setNotifiedCandidates] = useState(() => {
-        const savedNotified = localStorage.getItem('notifiedCandidates');
-        return savedNotified ? new Set(JSON.parse(savedNotified)) : new Set();
-    });
+    const [notifiedCandidates, setNotifiedCandidates] = useState(new Set());
     const [selectedColumns, setSelectedColumns] = useState({
         name: true,
         birthdate: false,
@@ -231,9 +228,19 @@ export default function UploadResume() {
         }
     };
 
+    // Add this useEffect after your other useEffects
+    useEffect(() => {
+        // Load notified candidates from localStorage on mount
+        const savedNotified = localStorage.getItem('notifiedCandidates');
+        if (savedNotified) {
+            setNotifiedCandidates(new Set(JSON.parse(savedNotified)));
+        }
+    }, []);
+
     // Save notified candidates whenever it changes
     useEffect(() => {
-        localStorage.setItem('notifiedCandidates', JSON.stringify([...notifiedCandidates]));
+        localStorage.setItem('notifiedCandidates', 
+            JSON.stringify([...notifiedCandidates]));
     }, [notifiedCandidates]);
 
     if (loading) return <div className="w-full h-screen flex items-center justify-center">Loading...</div>;

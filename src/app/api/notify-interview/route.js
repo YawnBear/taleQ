@@ -2,10 +2,15 @@ import nodemailer from "nodemailer";
 
 export async function POST(request) {
   try {
-    const { email, details } = await request.json();
+    const body = await request.json();
 
-    if (!email || !details) {
-      return new Response(JSON.stringify({ error: "Email and interview details are required." }), {
+    const { email, name, details } = body;
+
+    if (!email || !name || !details) {
+      return new Response(JSON.stringify({ 
+        error: "Email, name and interview details are required.",
+        received: { email, name, details } // Add this to see what was received
+      }), {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
@@ -24,7 +29,7 @@ export async function POST(request) {
       to: email,
       subject: "Interview Invitation from TaleQ",
       replyTo: "taleq.app@gmail.com",
-      text: `Dear Candidate,
+      text: `Dear ${name},
 
           We are pleased to inform you that you have been shortlisted for an interview with TaleQ.
 
@@ -38,7 +43,7 @@ export async function POST(request) {
           Best regards,
           TaleQ HR Team`,
 
-      html: `<p>Dear <strong>Candidate</strong>,</p>
+      html: `<p>Dear <strong>${name}</strong>,</p>
             <p>We are pleased to inform you that you have been shortlisted for an interview with TaleQ.</p>
             <p><strong>Interview Details:</strong><br>${details}</p>
             <p>We kindly request you to confirm your availability by replying to this email at your earliest convenience.</p>
