@@ -106,6 +106,9 @@ export default function UploadResume() {
         fetchResumes();
     }, [selectedColumns, emailSettings.autoSendEmails, notifiedCandidates]); // Added dependencies
 
+    // Add loading state
+    const [isUploading, setIsUploading] = useState(false);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!uploadedFiles.length) {
@@ -113,6 +116,7 @@ export default function UploadResume() {
             return;
         }
 
+        setIsUploading(true); // Set loading state to true when upload starts
         const formData = new FormData();
         formData.append("file", uploadedFiles[0]);
 
@@ -127,6 +131,8 @@ export default function UploadResume() {
         } catch (error) {
             console.error("Error uploading:", error);
             alert("Upload failed");
+        } finally {
+            setIsUploading(false); // Reset loading state when upload completes
         }
     };
 
@@ -202,7 +208,24 @@ export default function UploadResume() {
         }
 
         try {
-            console.log('Sending automated email to:', resume.name, resume['email address']); // Debug log
+            console.log('Sending automated email to:', resume.name, resume['email address']);
+            
+            // Define email content based on status
+            const emailContent = ['yes', 'interviewed', 'offered'].includes(resume.shortlisted?.toLowerCase()) 
+                ? {
+                    subject: "Interview Invitation from TaleQ",
+                    details: "Interview Schedule: Monday, 27 May 2025, 10:00 AM\n" +
+                            "Location: TaleQ Office, Level 2, Building A\n" +
+                            "Type: In-person interview\n" +
+                            "Duration: 1 hour"
+                }
+                : {
+                    subject: "Application Status Update from TaleQ",
+                    details: "Thank you for your interest in joining TaleQ.\n" +
+                            "After careful consideration, we regret to inform you that we will not be proceeding with your application at this time.\n" +
+                            "We appreciate the time you invested in applying and wish you success in your future endeavors."
+                };
+
             const response = await fetch('/api/notify-interview', {
                 method: 'POST',
                 headers: {
@@ -211,15 +234,14 @@ export default function UploadResume() {
                 body: JSON.stringify({
                     email: resume['email address'],
                     name: resume.name,
-                    details: "Interview Schedule: Monday, 27 May 2025, 10:00 AM\n" +
-                            "Location: TaleQ Office, Level 2, Building A\n" +
-                            "Type: In-person interview\n" +
-                            "Duration: 1 hour"
+                    subject: emailContent.subject, // Add subject field
+                    details: emailContent.details
                 }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to send automated email');
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to send automated email');
             }
 
             // Add to notified set after successful send
@@ -227,7 +249,7 @@ export default function UploadResume() {
             console.log('Email sent and candidate marked as notified:', resume.name);
         } catch (error) {
             console.error('Error sending automated email:', error);
-            throw error; // Re-throw to handle in calling function
+            throw error;
         }
     };
 
@@ -316,20 +338,26 @@ export default function UploadResume() {
                                                 {column === 'shortlisted' ? (
                                                     <div className="flex justify-center items-center">
                                                         <select
-                                                            value={resume.shortlisted?.toLowerCase() || 'no'}
+                                                            value={resume.shortlisted?.toLowerCase() || 'rejected'}
                                                             onChange={(e) => handleStatusChange(resume.ID, e.target.value)}
-                                                            className={`py-1.5 rounded-full text-xs font-medium cursor-pointer border-0 outline-none w-24 text-center
-                                                                ${resume.shortlisted?.toLowerCase() === 'yes' 
+                                                            className={`py-1.5 rounded-full text-xs font-medium cursor-pointer border-0 outline-none w-28 text-center
+                                                                ${['interviewed', 'offered', 'yes'].includes(resume.shortlisted?.toLowerCase())
                                                                     ? 'bg-green-100 text-green-800 hover:bg-green-200' 
                                                                     : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}
                                                                 transition-colors duration-200`}
                                                             style={{ WebkitAppearance: 'none', appearance: 'none' }}
                                                         >
-                                                            <option value="no" className="bg-gray-100 text-gray-800 font-medium">
-                                                                Pending
+                                                            <option value="rejected" className="bg-gray-100 text-gray-800 font-medium">
+                                                                Rejected
                                                             </option>
                                                             <option value="yes" className="bg-green-100 text-green-800 font-medium">
                                                                 Shortlisted
+                                                            </option>
+                                                            <option value="interviewed" className="bg-green-100 text-green-800 font-medium">
+                                                                Interviewed
+                                                            </option>
+                                                            <option value="offered" className="bg-green-100 text-green-800 font-medium">
+                                                                Offered
                                                             </option>
                                                         </select>
                                                     </div>
@@ -340,21 +368,40 @@ export default function UploadResume() {
                                         ))}
                                     {!emailSettings.autoSendEmails && (
                                         <td className="px-4 py-4 text-sm text-gray-500">
-                                            {resume.shortlisted?.toLowerCase() === 'yes' && (
-                                                <div className="flex justify-center">
+                                            <div className="flex justify-center gap-2">
+                                                {resume.shortlisted?.toLowerCase() === 'yes' ? (
                                                     <EmailButton 
-                                                        candidateId={resume.ID}
+                                                        candidateId={`${resume.ID}-accept`}
                                                         email={resume['email address']}
                                                         name={resume.name}
-                                                        details="Interview Schedule: Monday, 27 May 2025, 10:00 AM
-                                                                Location: TaleQ Office, Level 2, Building A
-                                                                Type: In-person interview
-                                                                Duration: 1 hour"
+                                                        type="accepted"
                                                         onEmailSent={(id) => setNotifiedCandidates(prev => new Set([...prev, id]))}
-                                                        isNotified={notifiedCandidates.has(resume.ID)}
+                                                        isNotified={notifiedCandidates.has(`${resume.ID}-accept`)}
                                                     />
-                                                </div>
-                                            )}
+                                                ) : ['rejected', 'no'].includes(resume.shortlisted?.toLowerCase()) ? (
+                                                    <EmailButton 
+                                                        candidateId={`${resume.ID}-reject`}
+                                                        email={resume['email address']}
+                                                        name={resume.name}
+                                                        type="rejected"
+                                                        onEmailSent={(id) => setNotifiedCandidates(prev => new Set([...prev, id]))}
+                                                        isNotified={notifiedCandidates.has(`${resume.ID}-reject`)}
+                                                    />
+                                                ) : (
+                                                    <button
+                                                        disabled
+                                                        className="p-1.5 rounded-full text-xs bg-gray-100 text-gray-400 cursor-not-allowed"
+                                                        title={['interviewed', 'offered'].includes(resume.shortlisted?.toLowerCase()) 
+                                                            ? "Email already sent during shortlisting phase" 
+                                                            : "Select status first"}
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                                        </svg>
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     )}
                                 </tr>
@@ -400,14 +447,40 @@ export default function UploadResume() {
                                     type="button"
                                     onClick={() => setShowOverlay(false)}
                                     className="px-6 py-2 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
+                                    disabled={isUploading}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    className="px-6 py-2 bg-gradient-to-r from-green-600 to-[#1c843e] text-white rounded-md hover:from-[#1c843e] hover:to-green-600 transition-all duration-300 font-medium shadow-md hover:shadow-lg"
+                                    disabled={isUploading}
+                                    className="px-6 py-2 bg-gradient-to-r from-green-600 to-[#1c843e] text-white rounded-md 
+                                        hover:from-[#1c843e] hover:to-green-600 transition-all duration-300 
+                                        font-medium shadow-md hover:shadow-lg disabled:opacity-50 
+                                        disabled:cursor-not-allowed flex items-center gap-2"
                                 >
-                                    Upload
+                                    {isUploading ? (
+                                        <>
+                                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                                <circle 
+                                                    className="opacity-25" 
+                                                    cx="12" 
+                                                    cy="12" 
+                                                    r="10" 
+                                                    stroke="currentColor" 
+                                                    strokeWidth="4"
+                                                />
+                                                <path 
+                                                    className="opacity-75" 
+                                                    fill="currentColor" 
+                                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                                                />
+                                            </svg>
+                                            Uploading...
+                                        </>
+                                    ) : (
+                                        'Upload'
+                                    )}
                                 </button>
                             </div>
                         </form>

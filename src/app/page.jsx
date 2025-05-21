@@ -71,7 +71,7 @@ export default function Home() {
             </nav>
             <main className="flex-1">
                 {currentPage === "jobPosition" && <JobDesc />}
-                {currentPage === "Resume" && <UploadResume2 />}
+                {currentPage === "Resume" && <UploadResume />}
                 {currentPage === "Calendar" && <p>dk man</p>}
                 {currentPage === "Settings" && <Settings />}
             </main>
