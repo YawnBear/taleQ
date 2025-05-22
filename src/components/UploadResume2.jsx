@@ -14,8 +14,6 @@ export default function UploadResume() {
     const [notifiedCandidates, setNotifiedCandidates] = useState(new Set());
     const [selectedColumns, setSelectedColumns] = useState({
         name: true,
-        birthdate: false,
-        location: false,
         'contact number': false,
         'email address': false,
         'contact links': false,
@@ -25,7 +23,9 @@ export default function UploadResume() {
         projects: false,
         skills: true,
         achievements: false,
-        shortlisted: true
+        shortlisted: true, 
+        status: true, 
+        'ai detection' : false
     });
 
     const handleColumnChange = (columnName) => {
@@ -62,6 +62,8 @@ export default function UploadResume() {
                 const columnsQuery = allColumns
                     .map(column => `columns=${encodeURIComponent(column)}`)
                     .join('&');
+
+                console.log(columnsQuery)
 
                 const response = await fetch(
                     `https://api.jamaibase.com/api/v1/gen_tables/action/resume1/rows?${columnsQuery}`,

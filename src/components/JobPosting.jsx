@@ -17,7 +17,7 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
     const fetchJobs = async () => {
       try {
         const res = await fetch(
-          "https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows?columns=jobPosition&columns=ID",
+          "https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows?columns=ID&columns=jobPosition",
           {
             method: "GET",
             headers: {
