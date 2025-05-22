@@ -17,8 +17,6 @@ export default function UploadResume() {
     });
     const [selectedColumns, setSelectedColumns] = useState({
         name: true,
-        birthdate: false,
-        location: false,
         'contact number': false,
         'email address': false,
         'contact links': false,
@@ -28,7 +26,10 @@ export default function UploadResume() {
         projects: false,
         skills: true,
         achievements: false,
-        shortlisted: true
+        certifications: false,
+        'shortlisted reasons': false,
+        shortlisted: true,
+        'ai detection': false
     });
 
     const handleColumnChange = (columnName) => {
@@ -80,7 +81,7 @@ export default function UploadResume() {
                     .join('&');
 
                 const response = await fetch(
-                    `https://api.jamaibase.com/api/v1/gen_tables/action/resume1/rows?${columnsQuery}`,
+                    `https://api.jamaibase.com/api/v1/gen_tables/action/${process.env.NEXT_PUBLIC_JAMAI_ACTION_TABLE_ID}/rows?${columnsQuery}`,
                     {
                         method: 'GET',
                         headers: {
@@ -161,7 +162,7 @@ export default function UploadResume() {
                 },
                 body: JSON.stringify({
                     data: { shortlisted: newStatus },
-                    table_id: 'resume1',
+                    table_id: process.env.NEXT_PUBLIC_JAMAI_ACTION_TABLE_ID,
                     row_id: rowId
                 })
             });
@@ -377,25 +378,34 @@ export default function UploadResume() {
                                                 {column === 'shortlisted' ? (
                                                     <div className="flex justify-center items-center">
                                                         <select
-                                                            value={resume.shortlisted?.toLowerCase() || 'rejected'}
+                                                            value={resume.shortlisted?.toLowerCase() || 'pending'}
                                                             onChange={(e) => handleStatusChange(resume.ID, e.target.value)}
                                                             className={`py-1.5 rounded-full text-xs font-medium cursor-pointer border-0 outline-none w-28 text-center
-                                                                ${['interviewed', 'offered', 'yes'].includes(resume.shortlisted?.toLowerCase())
-                                                                    ? 'bg-green-100 text-green-800 hover:bg-green-200' 
-                                                                    : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}
+                                                                ${resume.shortlisted?.toLowerCase() === 'yes' 
+                                                                    ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                                                                    : resume.shortlisted?.toLowerCase() === 'pending'
+                                                                      ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                                                                      : resume.shortlisted?.toLowerCase() === 'rejected'
+                                                                        ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                                                                        : ['interviewed', 'offered'].includes(resume.shortlisted?.toLowerCase())
+                                                                          ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                                                                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}
                                                                 transition-colors duration-200`}
                                                             style={{ WebkitAppearance: 'none', appearance: 'none' }}
                                                         >
-                                                            <option value="rejected" className="bg-gray-100 text-gray-800 font-medium">
+                                                            <option value="pending" className="bg-yellow-100 text-yellow-800 font-medium">
+                                                                Pending
+                                                            </option>
+                                                            <option value="rejected" className="bg-red-100 text-red-800 font-medium">
                                                                 Rejected
                                                             </option>
                                                             <option value="yes" className="bg-green-100 text-green-800 font-medium">
                                                                 Shortlisted
                                                             </option>
-                                                            <option value="interviewed" className="bg-green-100 text-green-800 font-medium">
+                                                            <option value="interviewed" className="bg-gray-100 text-gray-800 font-medium">
                                                                 Interviewed
                                                             </option>
-                                                            <option value="offered" className="bg-green-100 text-green-800 font-medium">
+                                                            <option value="offered" className="bg-gray-100 text-gray-800 font-medium">
                                                                 Offered
                                                             </option>
                                                         </select>
