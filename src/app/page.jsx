@@ -12,7 +12,7 @@ export default function Home() {
     return (
         <>
         <div className="flex h-screen">
-            <nav className="fixed w-48 h-screen bg-gray-100 border-r border-gray-300 flex flex-col justify-between">
+            <nav className="fixed w-48 h-screen bg-emerald-50 border-r border-gray-300 flex flex-col justify-between shadow-lg">
                 <div>
                     <ul className="space-y-2">
                         <div>
@@ -23,7 +23,7 @@ export default function Home() {
                         <li className="mt-20">
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "jobPosition" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                                    currentPage === "jobPosition" ? "bg-green-500 text-white" : "hover:bg-slate-300"
                                 }`}
                                 onClick={() => setCurrentPage("jobPosition")}
                             >
@@ -33,7 +33,7 @@ export default function Home() {
                         <li>
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "Resume" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                                    currentPage === "Resume" ? "bg-green-500 text-white" : "hover:bg-slate-300"
                                 }`}
                                 onClick={() => setCurrentPage("Resume")}
                             >
@@ -43,7 +43,7 @@ export default function Home() {
                         <li>
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "Calendar" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                                    currentPage === "Calendar" ? "bg-green-500 text-white" : "hover:bg-slate-300"
                                 }`}
                                 onClick={() => setCurrentPage("Calendar")}
                             >
@@ -57,7 +57,7 @@ export default function Home() {
                 <div className="mb-4">
                     <button
                         className={`w-full text-left px-4 py-2 rounded flex items-center ${
-                            currentPage === "Settings" ? "bg-green-600 text-white" : "hover:bg-gray-200"
+                            currentPage === "Settings" ? "bg-green-500 text-white" : "hover:bg-slate-300"
                         }`}
                         onClick={() => setCurrentPage("Settings")}
                     >
