@@ -287,8 +287,8 @@ export default function Calendar() {
                 </div>
                 <div className="divide-y divide-gray-200">
                     {filteredInterviews.length > 0 ? (
-                        filteredInterviews.map((interview) => (
-                            <div key={interview.id} className="p-4 hover:bg-gray-50">
+                        filteredInterviews.map((interview, index) => (
+                            <div key={interview.id || `interview-${index}`} className="p-4 hover:bg-gray-50">
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <h3 className="font-medium text-gray-900">
