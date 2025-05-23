@@ -14,7 +14,8 @@ const secondaryVariant = {
   animate: { opacity: 1 },
 };
 
-export const FileUpload = ({ onChange }) => {
+// Example FileUpload component with multiple support
+export function FileUpload({ onChange, multiple = false }) {
   const [files, setFiles] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -36,6 +37,11 @@ export const FileUpload = ({ onChange }) => {
     },
   });
 
+  const handleFileChangeInput = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    onChange(selectedFiles);
+  };
+
   return (
     <div className="w-full" {...getRootProps()}>
       <motion.div
@@ -46,6 +52,8 @@ export const FileUpload = ({ onChange }) => {
           ref={fileInputRef}
           id="file-upload-handle"
           type="file"
+          multiple
+          accept=".pdf,.doc,.docx"
           onChange={(e) => handleFileChange(Array.from(e.target.files || []))}
           className="hidden"
         />

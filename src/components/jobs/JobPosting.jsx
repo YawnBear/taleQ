@@ -68,24 +68,32 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
         {filteredJobs.map((job) => (
           <Card
             key={job.ID}
-            className="w-full min-h-[120px] shadow-lg hover:shadow-xl transition-all duration-300 border border-green-400 bg-white hover:border-green-500 group cursor-pointer"
+            className="w-full shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500 border-t border-r border-b border-gray-100 bg-white hover:bg-green-50 group cursor-pointer"
             onClick={() => setSelectedJobId(job.ID)}
           >
-            <CardHeader className="rounded-lg px-5 py-4 bg-white flex flex-col justify-center">
+            <CardHeader className="rounded-lg px-5 py-4 flex flex-col justify-center">
               <CardTitle className="text-gray-800 text-xl font-semibold group-hover:text-green-600 transition-colors duration-300">
                 {job.jobPosition || "Untitled Position"}
               </CardTitle>
+              <p className="text-gray-500 mt-1 text-sm">
+                Click to view details
+              </p>
             </CardHeader>
           </Card>
         ))}
         
-        {/* Add New Job Button - Keep fixed height */}
-        <div className="w-full h-[120px] border-2 border-dashed border-green-300 rounded-lg hover:border-green-500 transition-colors duration-300">
+        {/* Add New Job Button - Improved */}
+        <div className="w-full border-2 border-dashed border-green-300 rounded-lg hover:border-green-500 transition-colors duration-300 bg-white hover:bg-green-50">
           <button 
             onClick={handleToggleForm} 
-            className="w-full h-full flex items-center justify-center text-3xl text-green-400 hover:text-green-600 transition-colors duration-300"
+            className="w-full h-full py-8 flex flex-col items-center justify-center"
           >
-            +
+            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <span className="text-green-600 font-medium">Add New Job</span>
           </button>
         </div>
       </div>

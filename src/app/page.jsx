@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import JobDesc from "@/components/JobDesc";
-import UploadResume from "@/components/UploadResume";
-import UploadResume2 from "@/components/UploadResume2";
+import JobDesc from "@/components/jobs/JobDesc";
+import UploadResume from "@/components/resume/UploadResume";
+import Calendar from "@/components/calendar/Calendar";
 import Settings from "@/components/Settings";
 
 export default function Home() {
-    const [currentPage, setCurrentPage] = useState("jobPosition");
+    const [currentPage, setCurrentPage] = useState("Resume");
 
     return (
         <>
@@ -23,21 +23,21 @@ export default function Home() {
                         <li className="mt-20">
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "jobPosition" ? "bg-green-500 text-white" : "hover:bg-slate-300"
-                                }`}
-                                onClick={() => setCurrentPage("jobPosition")}
-                            >
-                                Job Position
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className={`w-full text-left px-4 py-2 rounded ${
                                     currentPage === "Resume" ? "bg-green-500 text-white" : "hover:bg-slate-300"
                                 }`}
                                 onClick={() => setCurrentPage("Resume")}
                             >
                                 Resume
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                className={`w-full text-left px-4 py-2 rounded ${
+                                    currentPage === "jobPosition" ? "bg-green-500 text-white" : "hover:bg-slate-300"
+                                }`}
+                                onClick={() => setCurrentPage("jobPosition")}
+                            >
+                                Job Position
                             </button>
                         </li>
                         <li>
@@ -72,7 +72,7 @@ export default function Home() {
             <main className="flex-1 ml-48">
                 {currentPage === "jobPosition" && <JobDesc />}
                 {currentPage === "Resume" && <UploadResume />}
-                {currentPage === "Calendar" && <p>dk man</p>}
+                {currentPage === "Calendar" && <Calendar />}
                 {currentPage === "Settings" && <Settings />}
             </main>
         </div>
