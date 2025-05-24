@@ -199,6 +199,6 @@ export default function ClusteringPanel({
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }
