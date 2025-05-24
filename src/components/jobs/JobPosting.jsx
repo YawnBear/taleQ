@@ -16,19 +16,21 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const res = await fetch(
-          "https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows?columns=ID&columns=jobPosition",
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
-              "X-PROJECT-ID": process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID,
-            },
-          }
-        );
-        const json = await res.json();
-        setJobs(json.items || []);
+        // Use your API route instead of direct JamAI call
+        const res = await fetch('/api/jobs', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        const result = await res.json();
+        
+        if (result.success) {
+          setJobs(result.jobs || []);
+        } else {
+          console.error('Failed to fetch jobs:', result.error);
+        }
       } catch (error) {
         console.error("Error fetching job data:", error);
       } finally {
@@ -44,7 +46,7 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
 
     // Cleanup function to clear interval when component unmounts
     return () => clearInterval(pollInterval);
-  }, []); // Empty dependency array since we want to set up polling only once
+  }, []);
 
   // Filter jobs based on search query
   useEffect(() => {
@@ -55,6 +57,46 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
     });
     setFilteredJobs(filtered);
   }, [jobs, searchQuery]);
+
+  const deleteJob = async (jobId, event) => {
+    // Stop event propagation to prevent card click
+    event.stopPropagation();
+    
+    // Show confirmation dialog
+    if (!window.confirm('Are you sure you want to delete this job posting?')) {
+      return;
+    }
+
+    try {
+      // Use your API route for deletion
+      const response = await fetch(`/api/jobs?id=${jobId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('Job deleted successfully');
+        // Remove job from state instead of reloading page
+        setJobs(prevJobs => prevJobs.filter(job => job.ID !== jobId));
+        setFilteredJobs(prevFiltered => prevFiltered.filter(job => job.ID !== jobId));
+        
+        // Close overlay if deleted job was selected
+        if (selectedJobId === jobId) {
+          setSelectedJobId(null);
+        }
+      } else {
+        console.error('Failed to delete job:', result.error);
+        alert('Failed to delete job. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error deleting job:', error);
+      alert('Error deleting job. Please try again.');
+    }
+  };
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[10vh]">
@@ -68,10 +110,31 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
         {filteredJobs.map((job) => (
           <Card
             key={job.ID}
-            className="w-full shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500 border-t border-r border-b border-gray-100 bg-white hover:bg-green-50 group cursor-pointer"
+            className="w-full shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-l-green-500 border-t border-r border-b border-gray-100 bg-white hover:bg-green-50 group cursor-pointer relative"
             onClick={() => setSelectedJobId(job.ID)}
           >
-            <CardHeader className="rounded-lg px-5 py-4 flex flex-col justify-center">
+            {/* Delete Button - Top Right Corner */}
+            <button
+              onClick={(e) => deleteJob(job.ID, e)}
+              className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-all duration-200 opacity-0 group-hover:opacity-100 z-10"
+              title="Delete job"
+            >
+              <svg 
+                className="w-4 h-4" 
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" 
+                />
+              </svg>
+            </button>
+
+            <CardHeader className="rounded-lg px-5 py-4 flex flex-col justify-center pr-10">
               <CardTitle className="text-gray-800 text-xl font-semibold group-hover:text-green-600 transition-colors duration-300">
                 {job.jobPosition || "Untitled Position"}
               </CardTitle>
@@ -97,7 +160,7 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
           </button>
         </div>
       </div>
-            {selectedJobId && (
+      {selectedJobId && (
         <JobDetailsOverlay 
           jobId={selectedJobId} 
           onClose={() => setSelectedJobId(null)} 

@@ -24,117 +24,116 @@ export default function JobDesc() {
         setErrorMessage("");
     };
     
+    const handleSubmit = async (e) => {
+        setIsSubmitting(true);
+        setErrorMessage("");
+        setSuccessMessage("");
+        e.preventDefault();
 
-const handleSubmit = async (e) => {
-    setIsSubmitting(true);
-    setErrorMessage("");
-    setSuccessMessage("");
-    e.preventDefault();
+        try {
+            if (mode === "manual") {
+                const jobData = {
+                    jobPosition,
+                    jobDesc,
+                    skillSet,
+                    remarks,
+                };
 
-    try {
-        if (mode === "manual") {
-            const jobData = {
-                jobPosition,
-                jobDesc,
-                skillSet,
-                remarks,
-            };
+                // First generate the PDF
+                const generateResponse = await fetch("/api/generate-pdf", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(jobData),
+                });
 
-            // First generate the PDF
-            const generateResponse = await fetch("/api/generate-pdf", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(jobData), // Make sure data is properly stringified
-            });
+                if (!generateResponse.ok) {
+                    const error = await generateResponse.json();
+                    throw new Error(error.message || "Failed to generate PDF");
+                }
 
-            if (!generateResponse.ok) {
-                const error = await generateResponse.json();
-                throw new Error(error.message || "Failed to generate PDF");
-            }
+                const generateData = await generateResponse.json();
 
-            const generateData = await generateResponse.json();
+                // Create PDF blob from base64
+                const binaryStr = atob(generateData.base64);
+                const bytes = new Uint8Array(binaryStr.length);
+                for (let i = 0; i < binaryStr.length; i++) {
+                    bytes[i] = binaryStr.charCodeAt(i);
+                }
+                const pdfBlob = new Blob([bytes], { type: "application/pdf" });
 
-            // Create PDF blob from base64
-            const binaryStr = atob(generateData.base64);
-            const bytes = new Uint8Array(binaryStr.length);
-            for (let i = 0; i < binaryStr.length; i++) {
-                bytes[i] = binaryStr.charCodeAt(i);
-            }
-            const pdfBlob = new Blob([bytes], { type: "application/pdf" });
-
-            // Create FormData and append file
-            const formData = new FormData();
-            formData.append("file", pdfBlob, `${jobPosition}.pdf`);
-            formData.append("jobPosition", jobPosition);
-
-            // Upload to server
-            const uploadResponse = await fetch("/api/upload-jobs", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!uploadResponse.ok) {
-                const error = await uploadResponse.json();
-                throw new Error(error.message || "Failed to upload to Jamaibase");
-            }
-
-            setSuccessMessage("Job submitted and uploaded successfully!");
-            // Reset form
-            setJobPosition("");
-            setJobDesc("");
-            setSkillSet("");
-            setRemarks("");
-            
-        } else if (mode === "file") {
-            if (!uploadedFiles.length) {
-                throw new Error("Please upload at least one PDF file.");
-            }
-
-            // Track successful uploads
-            let successCount = 0;
-            const totalFiles = uploadedFiles.length;
-            
-            // Process each file
-            for (const file of uploadedFiles) {
+                // Create FormData and append file
                 const formData = new FormData();
-                formData.append("file", file);
-                formData.append("jobPosition", jobPosition || file.name.replace('.pdf', ''));
+                formData.append("file", pdfBlob, `${jobPosition}.pdf`);
+                formData.append("jobPosition", jobPosition);
 
-                const uploadResponse = await fetch("/api/upload-jobs", {
+                // Upload to server using consolidated endpoint
+                const uploadResponse = await fetch("/api/jobs", {
                     method: "POST",
                     body: formData,
                 });
 
-                if (uploadResponse.ok) {
-                    successCount++;
-                } else {
+                if (!uploadResponse.ok) {
                     const error = await uploadResponse.json();
-                    console.error(`Failed to upload ${file.name}:`, error);
+                    throw new Error(error.message || "Failed to upload to Jamaibase");
                 }
-            }
 
-            // Report results
-            if (successCount === totalFiles) {
-                setSuccessMessage(`Successfully uploaded ${successCount} file(s)!`);
-            } else if (successCount > 0) {
-                setSuccessMessage(`Uploaded ${successCount} out of ${totalFiles} files.`);
-            } else {
-                throw new Error("Failed to upload files. Please try again.");
+                setSuccessMessage("Job submitted and uploaded successfully!");
+                // Reset form
+                setJobPosition("");
+                setJobDesc("");
+                setSkillSet("");
+                setRemarks("");
+                
+            } else if (mode === "file") {
+                if (!uploadedFiles.length) {
+                    throw new Error("Please upload at least one PDF file.");
+                }
+
+                // Track successful uploads
+                let successCount = 0;
+                const totalFiles = uploadedFiles.length;
+                
+                // Process each file
+                for (const file of uploadedFiles) {
+                    const formData = new FormData();
+                    formData.append("file", file);
+                    formData.append("jobPosition", jobPosition || file.name.replace('.pdf', ''));
+
+                    // Use consolidated endpoint
+                    const uploadResponse = await fetch("/api/jobs", {
+                        method: "POST",
+                        body: formData,
+                    });
+
+                    if (uploadResponse.ok) {
+                        successCount++;
+                    } else {
+                        const error = await uploadResponse.json();
+                        console.error(`Failed to upload ${file.name}:`, error);
+                    }
+                }
+
+                // Report results
+                if (successCount === totalFiles) {
+                    setSuccessMessage(`Successfully uploaded ${successCount} file(s)!`);
+                } else if (successCount > 0) {
+                    setSuccessMessage(`Uploaded ${successCount} out of ${totalFiles} files.`);
+                } else {
+                    throw new Error("Failed to upload files. Please try again.");
+                }
+                
+                setUploadedFiles([]);
+                setJobPosition("");
             }
-            
-            setUploadedFiles([]);
-            setJobPosition("");
+        } catch (error) {
+            console.error("Submission error:", error);
+            setErrorMessage(error.message || "Something went wrong");
+        } finally {
+            setIsSubmitting(false);
         }
-    } catch (error) {
-        console.error("Submission error:", error);
-        setErrorMessage(error.message || "Something went wrong");
-    } finally {
-        setIsSubmitting(false);
-    }
-};
-
+    };
 
     return (
         <div className="bg-gray-50 min-h-screen">
@@ -275,8 +274,6 @@ const handleSubmit = async (e) => {
                                     >
                                         {isSubmitting ? "Submitting..." : "Submit"}
                                     </button>
-                                    {successMessage && <div className="mt-4 text-green-600">{successMessage}</div>}
-                                    {errorMessage && <div className="mt-4 text-red-500">{errorMessage}</div>}
                                 </form>
                             )}
 
@@ -338,28 +335,10 @@ const handleSubmit = async (e) => {
                                     >
                                         {isSubmitting ? "Submitting..." : "Submit"}
                                     </button>
-                                    {successMessage && <div className="mt-4 text-green-600">{successMessage}</div>}
-                                    {errorMessage && <div className="mt-4 text-red-500">{errorMessage}</div>}
                                 </form>
                             )}
 
-                            <div className="mt-8 flex justify-end gap-3">
-                                <button
-                                    onClick={handleToggleForm}
-                                    className="px-6 py-2.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    form={mode === "manual" ? "manualForm" : "fileForm"}
-                                    className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-md hover:from-emerald-500 hover:to-green-600 transition-all duration-300 font-medium shadow-md hover:shadow-lg disabled:opacity-50"
-                                    disabled={isSubmitting}
-                                >
-                                    {isSubmitting ? "Submitting..." : "Submit"}
-                                </button>
-                            </div>
-                            
+                            {/* Success and Error Messages */}
                             {successMessage && (
                                 <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700">
                                     {successMessage}

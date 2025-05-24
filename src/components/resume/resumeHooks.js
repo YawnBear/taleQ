@@ -7,34 +7,29 @@ export function useResumeData(selectedColumns) {
     useEffect(() => {
         const fetchResumes = async () => {
             try {
-                // Get visible columns for display
-                const visibleColumns = Object.entries(selectedColumns)
-                    .filter(([_, isSelected]) => isSelected)
-                    .map(([column]) => column);
+                const response = await fetch('/api/get-resumes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ selectedColumns })
+                });
 
-                // Always include email address and name for functionality
-                const requiredColumns = ['email address', 'name'];
-                const allColumns = [...new Set([...visibleColumns, ...requiredColumns])];
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-                const columnsQuery = allColumns
-                    .map(column => `columns=${encodeURIComponent(column)}`)
-                    .join('&');
-
-                const response = await fetch(
-                    `https://api.jamaibase.com/api/v1/gen_tables/action/${process.env.NEXT_PUBLIC_JAMAI_ACTION_TABLE_ID}/rows?${columnsQuery}`,
-                    {
-                        method: 'GET',
-                        headers: {
-                            accept: 'application/json',
-                            authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
-                            'X-PROJECT-ID': process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID
-                        }
-                    }
-                );
                 const data = await response.json();
-                setResumes(data.items || []);
+                
+                if (data.success) {
+                    setResumes(data.items || []);
+                } else {
+                    console.error('API returned error:', data.error);
+                    setResumes([]);
+                }
             } catch (error) {
                 console.error('Error fetching resumes:', error);
+                setResumes([]);
             } finally {
                 setLoading(false);
             }
@@ -98,7 +93,6 @@ export function useFilteredResumes(resumes, filterStatus, searchQuery, selectedC
     });
 }
 
-// Add this function if you want a separate hook for clustering
 export function useResumeClustering() {
     const [clusteredResults, setClusteredResults] = useState(null);
     const [isClustering, setIsClustering] = useState(false);

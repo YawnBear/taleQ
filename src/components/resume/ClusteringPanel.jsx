@@ -54,6 +54,12 @@ export default function ClusteringPanel({ clusteringPrompt, setClusteringPrompt,
                         >
                             Group by experience level
                         </button>
+                        <button 
+                            className="px-3 py-1 text-xs bg-orange-50 text-orange-700 rounded-full hover:bg-orange-100 transition-colors"
+                            onClick={() => setClusteringPrompt("Find candidates with possibility of resume being AI-generated")}
+                        >
+                            AI-generated detection
+                        </button>
                     </div>
                     
                     <div className="space-y-4">

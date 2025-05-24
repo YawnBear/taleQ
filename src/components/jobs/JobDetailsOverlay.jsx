@@ -7,31 +7,40 @@ export default function JobDetailsOverlay({ jobId, onClose }) {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const res = await fetch(
-          `https://api.jamaibase.com/api/v1/gen_tables/knowledge/jobs/rows/${jobId}?columns=jobPosition&columns=jobDescription&columns=skillSet&columns=remarks`,
-          {
-            method: "GET",
-            headers: {
-              accept: "application/json",
-              authorization: `Bearer ${process.env.NEXT_PUBLIC_JAMAI_API_KEY}`,
-              "X-PROJECT-ID": process.env.NEXT_PUBLIC_JAMAI_PROJECT_ID,
-            },
-          }
-        );
-        const data = await res.json();
-        setDetails(data);
-        console.log("Job Details:", data);
+        // Use your API route instead of direct JamAI call
+        const res = await fetch(`/api/jobs?id=${jobId}&action=details`, {
+          method: "GET",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        
+        const result = await res.json();
+        
+        if (result.success) {
+          setDetails(result.details);
+          console.log("Job Details:", result.details);
+        } else {
+          console.error("Failed to fetch job details:", result.error);
+          setDetails(null);
+        }
       } catch (error) {
-        console.error("Error:", error);
+        console.error("Error fetching job details:", error);
+        setDetails(null);
       } finally {
         setLoading(false);
       }
     };
-    fetchDetails();
+
+    if (jobId) {
+      fetchDetails();
+    }
   }, [jobId]);
 
   if (!details && !loading) return null;
+  
   console.log("Current details state:", details);
+  
   return (
     <div 
       className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
@@ -45,7 +54,7 @@ export default function JobDetailsOverlay({ jobId, onClose }) {
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
           </div>
-        ) : (
+        ) : details ? (
           <>
             <div className="bg-green-500 text-white p-6">
               <h2 className="text-2xl font-bold">
@@ -85,6 +94,19 @@ export default function JobDetailsOverlay({ jobId, onClose }) {
               </button>
             </div>
           </>
+        ) : (
+          <div className="flex flex-col justify-center items-center h-64 text-gray-500">
+            <svg className="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-lg">Failed to load job details</p>
+            <button
+              onClick={onClose}
+              className="mt-4 px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+            >
+              Close
+            </button>
+          </div>
         )}
       </div>
     </div>
