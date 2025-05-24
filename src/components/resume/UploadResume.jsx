@@ -3,8 +3,7 @@ import { useResumeData, useNotifiedCandidates, useFilteredResumes } from "./resu
 import ResumeFilters from "./ResumeFilters";
 import ResumeTable from "./ResumeTable";
 import UploadModal from "./UploadModal";
-import ClusteringPanel from "./ClusteringPanel";
-import ClusterResults from "./ClusterResults";
+import ClusteringOverlay from './ClusteringOverlay';
 
 export default function UploadResume() {
     const [showOverlay, setShowOverlay] = useState(false);
@@ -17,6 +16,7 @@ export default function UploadResume() {
     const [clusteringPrompt, setClusteringPrompt] = useState("");
     const [clusteredResults, setClusteredResults] = useState(null);
     const [isClustering, setIsClustering] = useState(false);
+    const [showClusteringOverlay, setShowClusteringOverlay] = useState(false);
     
     // Custom hooks for state management
     const [notifiedCandidates, setNotifiedCandidates] = useNotifiedCandidates();
@@ -176,35 +176,38 @@ export default function UploadResume() {
                     notifiedCandidates={notifiedCandidates}
                     setNotifiedCandidates={setNotifiedCandidates}
                 />
-                
-                {/* Add clustering components */}
-                <ClusteringPanel 
-                    clusteringPrompt={clusteringPrompt}
-                    setClusteringPrompt={setClusteringPrompt}
-                    handleClustering={handleClustering}
-                    isClustering={isClustering}
-                />
-                
-                {clusteredResults && (
-                    <ClusterResults 
-                        clusteredResults={clusteredResults}
-                        handleStatusChange={handleStatusChange}
-                    />
-                )}
             </div>
 
-            <button
-                onClick={() => setShowOverlay(true)}
-                className="fixed bottom-8 right-8 w-14 h-14 rounded-full 
-                    bg-gradient-to-r from-green-600 to-[#1c843e] text-white 
-                    shadow-lg hover:shadow-xl 
-                    transition-all duration-300 
-                    flex items-center justify-center text-2xl
-                    hover:scale-110 hover:rotate-90
-                    active:scale-95"
-            >
-                +
-            </button>
+            <div className="fixed bottom-8 right-8 flex gap-4">
+                <button
+                    onClick={() => setShowClusteringOverlay(true)}
+                    className="w-14 h-14 rounded-full 
+                        bg-gradient-to-r from-blue-600 to-blue-700 text-white 
+                        shadow-lg hover:shadow-xl 
+                        transition-all duration-300 
+                        flex items-center justify-center
+                        hover:scale-110
+                        active:scale-95"
+                    title="Cluster Resumes"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM14 11a1 1 0 011 1v1h1a1 1 0 110 2h-1v1a1 1 0 11-2 0v-1h-1a1 1 0 110-2h1v-1a1 1 0 011-1z" />
+                    </svg>
+                </button>
+
+                <button
+                    onClick={() => setShowOverlay(true)}
+                    className="w-14 h-14 rounded-full 
+                        bg-gradient-to-r from-green-600 to-[#1c843e] text-white 
+                        shadow-lg hover:shadow-xl 
+                        transition-all duration-300 
+                        flex items-center justify-center text-2xl
+                        hover:scale-110 hover:rotate-90
+                        active:scale-95"
+                >
+                    +
+                </button>
+            </div>
 
             <UploadModal 
                 showOverlay={showOverlay}
@@ -213,6 +216,17 @@ export default function UploadResume() {
                 setUploadedFiles={setUploadedFiles}
                 handleSubmit={handleSubmit}
                 isUploading={isUploading}
+            />
+
+            <ClusteringOverlay 
+                showOverlay={showClusteringOverlay}
+                setShowOverlay={setShowClusteringOverlay}
+                clusteringPrompt={clusteringPrompt}
+                setClusteringPrompt={setClusteringPrompt}
+                handleClustering={handleClustering}
+                isClustering={isClustering}
+                clusteredResults={clusteredResults}
+                handleStatusChange={handleStatusChange}
             />
         </>
     );
