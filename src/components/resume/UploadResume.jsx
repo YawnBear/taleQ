@@ -35,8 +35,8 @@ export default function UploadResume() {
         achievements: false,
         certifications: false,
         'shortlisted reasons': false,
-        shortlisted: true,
-        'ai detection': false
+        shortlisted: true
+        // Removed 'ai detection': false
     });
 
     const handleColumnChange = (columnName) => {
@@ -50,7 +50,7 @@ export default function UploadResume() {
     const { resumes, setResumes, loading } = useResumeData(selectedColumns);
     const filteredResumes = useFilteredResumes(resumes, filterStatus, searchQuery, selectedColumns);
 
-    // Simplified clustering function - just calls backend
+    // Clustering function
     const handleClustering = async () => {
         if (!clusteringPrompt.trim()) {
             alert("Please enter a clustering prompt.");
@@ -87,7 +87,7 @@ export default function UploadResume() {
         }
     };
 
-    // Remove the status change logic from frontend - it will be handled by the backend
+    // Status change handler
     const handleStatusChange = async (rowId, newStatus) => {
         try {
             const response = await fetch('/api/update-resume-status', {
@@ -119,13 +119,13 @@ export default function UploadResume() {
         }
     };
 
-    // Add this function to handle resume deletions
+    // Delete resume handler
     const handleDeleteResumes = (deletedIds) => {
-        // Remove deleted resumes from the state
         const updatedResumes = resumes.filter(resume => !deletedIds.includes(resume.ID));
         setResumes(updatedResumes);
     };
 
+    // Upload handler
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!uploadedFiles.length) {
@@ -136,7 +136,6 @@ export default function UploadResume() {
         setIsUploading(true);
         
         try {
-            // Process each file sequentially
             for (const file of uploadedFiles) {
                 const formData = new FormData();
                 formData.append("file", file);
@@ -185,44 +184,45 @@ export default function UploadResume() {
                     handleStatusChange={handleStatusChange}
                     notifiedCandidates={notifiedCandidates}
                     setNotifiedCandidates={setNotifiedCandidates}
-                    onDeleteResume={handleDeleteResumes} // Add this prop
+                    onDeleteResume={handleDeleteResumes}
                 />
-                
-                {/* REMOVED: Bottom clustering components */}
             </div>
 
-            {/* Upload Resume Button */}
-            <button
-                onClick={() => setShowOverlay(true)}
-                className="fixed bottom-8 right-8 w-14 h-14 rounded-full 
-                    bg-gradient-to-r from-green-600 to-[#1c843e] text-white 
-                    shadow-lg hover:shadow-xl 
-                    transition-all duration-300 
-                    flex items-center justify-center text-2xl
-                    hover:scale-110 hover:rotate-90
-                    active:scale-95"
-                title="Upload Resume"
-            >
-                +
-            </button>
+            {/* Floating Action Buttons */}
+            <div className="fixed bottom-8 right-8 flex flex-col gap-4">
+                {/* Clustering Button */}
+                <button
+                    onClick={() => setShowClusteringOverlay(true)}
+                    className="w-14 h-14 rounded-full 
+                        bg-gradient-to-r from-blue-600 to-purple-600 text-white 
+                        shadow-lg hover:shadow-xl 
+                        transition-all duration-300 
+                        flex items-center justify-center
+                        hover:scale-110
+                        active:scale-95"
+                    title="AI Clustering"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M19 11H5m14-7l2 2m0 0l2 2m-2-2v6m2-6l2 2m0 0l2 2m-2-2v6" />
+                    </svg>
+                </button>
 
-            {/* Clustering Toggle Button */}
-            <button
-                onClick={() => setShowClusteringOverlay(true)}
-                className="fixed bottom-8 right-24 w-14 h-14 rounded-full 
-                    bg-gradient-to-r from-blue-600 to-purple-600 text-white 
-                    shadow-lg hover:shadow-xl 
-                    transition-all duration-300 
-                    flex items-center justify-center
-                    hover:scale-110
-                    active:scale-95"
-                title="AI Clustering"
-            >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M19 11H5m14-7l2 2m0 0l2 2m-2-2v6m2-6l2 2m0 0l2 2m-2-2v6" />
-                </svg>
-            </button>
+                {/* Upload Button */}
+                <button
+                    onClick={() => setShowOverlay(true)}
+                    className="w-14 h-14 rounded-full 
+                        bg-gradient-to-r from-green-600 to-[#1c843e] text-white 
+                        shadow-lg hover:shadow-xl 
+                        transition-all duration-300 
+                        flex items-center justify-center text-2xl
+                        hover:scale-110 hover:rotate-90
+                        active:scale-95"
+                    title="Upload Resume"
+                >
+                    +
+                </button>
+            </div>
 
             {/* Upload Modal */}
             <UploadModal 

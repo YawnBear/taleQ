@@ -215,21 +215,24 @@ export default function ResumeTable({
 }
 
 function StatusSelector({ resume, handleStatusChange }) {
+    // Get the current status, defaulting to 'pending' if null/undefined
+    const currentStatus = resume.shortlisted?.toLowerCase() || 'pending';
+    
     return (
         <div className="flex justify-center items-center">
             <select
-                value={resume.shortlisted?.toLowerCase() || 'pending'}
+                value={currentStatus}
                 onChange={(e) => handleStatusChange(resume.ID, e.target.value)}
                 className={`py-1.5 rounded-full text-xs font-medium cursor-pointer border-0 outline-none w-28 text-center
-                    ${resume.shortlisted?.toLowerCase() === 'yes' 
+                    ${currentStatus === 'yes' 
                         ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                        : resume.shortlisted?.toLowerCase() === 'pending'
+                        : currentStatus === 'pending'
                           ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
-                          : resume.shortlisted?.toLowerCase() === 'rejected'
+                          : currentStatus === 'rejected'
                             ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                            : ['interviewed', 'offered'].includes(resume.shortlisted?.toLowerCase())
+                            : ['interviewed', 'offered'].includes(currentStatus)
                               ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                              : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}
+                              : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'} // Default fallback to pending style
                     transition-colors duration-200`}
                 style={{ WebkitAppearance: 'none', appearance: 'none' }}
             >

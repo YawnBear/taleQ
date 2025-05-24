@@ -14,69 +14,111 @@ export async function POST(req) {
     const fd = new FormData();
     fd.append('file', file, file.name);
 
-    // Step 1: Upload file to Jamaibase
-    const uploadRes = await fetch('https://api.jamaibase.com/api/v1/files/upload', {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
-        'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
-      },
-      body: fd,
-    });
+    console.log('Starting upload for:', file.name);
 
-    const uploadText = await uploadRes.text();
-    let uploadData;
+    // Step 1: Upload file to Jamaibase
+    let uploadRes, uploadText, uploadData;
     try {
+      uploadRes = await fetch('https://api.jamaibase.com/api/v1/files/upload', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
+          'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
+        },
+        body: fd,
+      });
+
+      console.log('Upload response status:', uploadRes.status);
+      
+      uploadText = await uploadRes.text();
+      console.log('Upload response length:', uploadText.length);
+      
+      if (!uploadRes.ok) {
+        throw new Error(`Upload failed: ${uploadRes.status} - ${uploadText}`);
+      }
+
       uploadData = JSON.parse(uploadText);
-    } catch (e) {
-      console.error('Failed to parse upload response:', uploadText);
-      throw e;
+      console.log('✅ Upload successful');
+    } catch (uploadError) {
+      console.error('❌ Upload step failed:', uploadError.message);
+      throw new Error(`File upload failed: ${uploadError.message}`);
     }
-    console.log('Upload response:', uploadData);
 
     const fileUrl = uploadData?.data?.url || uploadData?.url || uploadData?.uri;
 
     if (!fileUrl) {
-      return NextResponse.json({ message: 'File upload failed', uploadData }, { status: 500 });
+      console.error('❌ No fileUrl extracted from:', uploadData);
+      throw new Error('No file URL returned from upload');
     }
 
-    // Step 2: Add row to Jamaibase table with uploaded file URL
-    const rowRes = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/rows/add', {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
-        'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
-      },
-      body: JSON.stringify({
-        table_id: process.env.JAMAI_ACTION_TABLE_ID,
-        data: [
-          {
-            [process.env.JAMAI_ACTION_COLUMN_ID]: fileUrl,
-          },
-        ],
-      }),
+    console.log('File URL extracted:', fileUrl);
+
+    // Step 2: Add row to Jamaibase table
+    let rowRes, rowText, rowData;
+    try {
+      rowRes = await fetch('https://api.jamaibase.com/api/v1/gen_tables/action/rows/add', {
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
+          'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
+        },
+        body: JSON.stringify({
+          table_id: process.env.JAMAI_ACTION_TABLE_ID,
+          data: [
+            {
+              [process.env.JAMAI_ACTION_COLUMN_ID]: fileUrl,
+            },
+          ],
+        }),
+      });
+
+      console.log('Row add response status:', rowRes.status);
+      
+      rowText = await rowRes.text();
+      console.log('Row add response length:', rowText.length);
+      
+      if (!rowRes.ok) {
+        throw new Error(`Row add failed: ${rowRes.status} - ${rowText}`);
+      }
+
+      // Handle different response formats more safely
+      if (rowText.trim()) {
+        try {
+          rowData = JSON.parse(rowText);
+        } catch (parseError) {
+          console.warn('⚠️ Row response not JSON, treating as raw:', rowText.substring(0, 100));
+          rowData = { raw: rowText, success: true };
+        }
+      } else {
+        console.warn('⚠️ Empty row response, assuming success');
+        rowData = { success: true };
+      }
+      
+      console.log('✅ Row add successful');
+    } catch (rowError) {
+      console.error('❌ Row add step failed:', rowError.message);
+      throw new Error(`Row addition failed: ${rowError.message}`);
+    }
+
+    console.log('✅ Complete success for:', file.name);
+    return NextResponse.json({ 
+      message: 'Resume uploaded successfully!', 
+      data: rowData,
+      fileUrl: fileUrl
     });
 
-    const rowText = await rowRes.text();
-    let rowData;
-    try {
-      if (rowText.trim().startsWith('{') || rowText.trim().startsWith('[')) {
-        rowData = JSON.parse(rowText);
-      } else {
-        rowData = { raw: rowText };
-      }
-    } catch (e) {
-      console.error('Failed to parse row response:', rowText);
-      throw e;
-    }
-    console.log('Row add response:', rowData);
-
-    return NextResponse.json({ message: 'Resume uploaded and row added!', data: rowData });
   } catch (error) {
-    console.error('Server error:', error, error.stack);
-    return NextResponse.json({ message: 'Internal server error', error: error.message }, { status: 500 });
+    console.error('❌ Overall error for file:', error.message);
+    console.error('❌ Stack trace:', error.stack);
+    
+    // Return more specific error information
+    return NextResponse.json({ 
+      message: 'Upload failed', 
+      error: error.message,
+      timestamp: new Date().toISOString()
+    }, { status: 500 });
   }
 }
