@@ -159,7 +159,13 @@ export default function UploadResume() {
 
     return (
         <>
-            <div className="w-full max-w-[100rem] mx-auto px-2 py-8">
+            <div className="w-full max-w-[80rem] mx-auto px-2 py-8">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-800 mb-4">Resumes</h1>
+                    <p className="text-gray-600 max-w-3xl">
+                        Effective managing all uploaded resumes in one place.
+                    </p>
+                </div>               
                 <ResumeFilters 
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}

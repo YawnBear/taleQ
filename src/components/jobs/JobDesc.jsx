@@ -137,8 +137,8 @@ const handleSubmit = async (e) => {
 
 
     return (
-        <div className="bg-gray-50 min-h-screen">
-            <div className="max-w-7xl mx-auto p-6">
+        <div className="w-full max-w-[80rem] mx-auto px-2 py-8">
+            <div className="mx-auto p-8">
                 {/* Header Section */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-800 mb-4">Job Listings</h1>
