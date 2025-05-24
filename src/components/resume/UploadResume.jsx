@@ -3,7 +3,8 @@ import { useResumeData, useNotifiedCandidates, useFilteredResumes } from "./resu
 import ResumeFilters from "./ResumeFilters";
 import ResumeTable from "./ResumeTable";
 import UploadModal from "./UploadModal";
-import ClusteringPanel from './ClusteringPanel';
+import ClusteringPanel from "./ClusteringPanel";
+import ClusterResults from "./ClusterResults";
 
 export default function UploadResume() {
     const [showOverlay, setShowOverlay] = useState(false);
@@ -168,13 +169,7 @@ export default function UploadResume() {
 
     return (
         <>
-            <div className="w-full max-w-[80rem] mx-auto px-2 py-8">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 mb-4">Resumes</h1>
-                    <p className="text-gray-600 max-w-3xl">
-                        Effective managing all uploaded resumes in one place.
-                    </p>
-                </div>               
+            <div className="w-full max-w-[100rem] mx-auto px-2 py-8">
                 <ResumeFilters 
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -303,7 +298,6 @@ export default function UploadResume() {
                                                 <li>• "Group by years of experience"</li>
                                                 <li>• "Find candidates with Python skills"</li>
                                                 <li>• "Cluster by education level"</li>
-                                                <li>• "Find candidates with possibility of resume being AI-generated"</li>
                                             </ul>
                                         </div>
                                         <div className="bg-purple-50 p-6 rounded-lg">
