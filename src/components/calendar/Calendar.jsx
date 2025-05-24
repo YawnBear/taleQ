@@ -157,7 +157,13 @@ export default function Calendar() {
         : interviews;
 
     return (
-        <div className="w-full max-w-7xl mx-auto p-8 space-y-8">
+        <div className="w-full max-w-[80rem] mx-auto p-8 space-y-8">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-800 mb-4">Calendar</h1>
+                <p className="text-gray-600 max-w-4xl">
+                    View all scheduled interviews here. Click on a date to see available time slots, and book interviews with candidates.
+                </p>
+            </div>
             <div className="bg-white rounded-lg shadow">
                 {/* Calendar Header */}
                 <div className="flex items-center justify-between p-4 border-b">

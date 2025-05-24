@@ -145,7 +145,6 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
           </Card>
         ))}
         
-        {/* Add New Job Button - Improved */}
         <div className="w-full border-2 border-dashed border-green-300 rounded-lg hover:border-green-500 transition-colors duration-300 bg-white hover:bg-green-50">
           <button 
             onClick={handleToggleForm} 

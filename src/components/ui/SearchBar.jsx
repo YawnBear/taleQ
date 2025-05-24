@@ -11,6 +11,8 @@ export default function SearchBar({ value, onChange }) {
       sx={{
         "& .MuiOutlinedInput-root": {
           color: "black",
+          borderRadius: "8px",
+          backgroundColor: "white",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "black",
           },
