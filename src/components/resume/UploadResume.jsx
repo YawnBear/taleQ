@@ -3,7 +3,7 @@ import { useResumeData, useNotifiedCandidates, useFilteredResumes } from "./resu
 import ResumeFilters from "./ResumeFilters";
 import ResumeTable from "./ResumeTable";
 import UploadModal from "./UploadModal";
-import ClusteringOverlay from './ClusteringOverlay';
+import ClusteringPanel from './ClusteringPanel';
 
 export default function UploadResume() {
     const [showOverlay, setShowOverlay] = useState(false);
@@ -16,7 +16,6 @@ export default function UploadResume() {
     const [clusteringPrompt, setClusteringPrompt] = useState("");
     const [clusteredResults, setClusteredResults] = useState(null);
     const [isClustering, setIsClustering] = useState(false);
-    const [showClusteringOverlay, setShowClusteringOverlay] = useState(false);
     const [showClusteringOverlay, setShowClusteringOverlay] = useState(false);
     
     // Custom hooks for state management
