@@ -3,6 +3,8 @@ import { useResumeData, useNotifiedCandidates, useFilteredResumes } from "./resu
 import ResumeFilters from "./ResumeFilters";
 import ResumeTable from "./ResumeTable";
 import UploadModal from "./UploadModal";
+import ClusteringPanel from "./ClusteringPanel";
+import ClusterResults from "./ClusterResults";
 
 export default function UploadResume() {
     const [showOverlay, setShowOverlay] = useState(false);
@@ -10,6 +12,11 @@ export default function UploadResume() {
     const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [isUploading, setIsUploading] = useState(false);
+    
+    // Clustering state
+    const [clusteringPrompt, setClusteringPrompt] = useState("");
+    const [clusteredResults, setClusteredResults] = useState(null);
+    const [isClustering, setIsClustering] = useState(false);
     
     // Custom hooks for state management
     const [notifiedCandidates, setNotifiedCandidates] = useNotifiedCandidates();
@@ -41,6 +48,42 @@ export default function UploadResume() {
 
     const { resumes, setResumes, loading } = useResumeData(selectedColumns);
     const filteredResumes = useFilteredResumes(resumes, filterStatus, searchQuery, selectedColumns);
+
+    // Add the clustering function
+    const handleClustering = async () => {
+        if (!clusteringPrompt.trim()) {
+            alert("Please enter a clustering prompt.");
+            return;
+        }
+
+        setIsClustering(true);
+        setClusteredResults(null);
+        
+        try {
+            const response = await fetch("/api/cluster-resumes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt: clusteringPrompt,
+                    resumes: filteredResumes,
+                }),
+            });
+            
+            if (!response.ok) {
+                throw new Error("Failed to cluster resumes");
+            }
+            
+            const data = await response.json();
+            setClusteredResults(data);
+        } catch (error) {
+            console.error("Clustering error:", error);
+            alert("Failed to cluster resumes. Please try again.");
+        } finally {
+            setIsClustering(false);
+        }
+    };
 
     const handleStatusChange = async (rowId, newStatus) => {
         try {
@@ -133,6 +176,21 @@ export default function UploadResume() {
                     notifiedCandidates={notifiedCandidates}
                     setNotifiedCandidates={setNotifiedCandidates}
                 />
+                
+                {/* Add clustering components */}
+                <ClusteringPanel 
+                    clusteringPrompt={clusteringPrompt}
+                    setClusteringPrompt={setClusteringPrompt}
+                    handleClustering={handleClustering}
+                    isClustering={isClustering}
+                />
+                
+                {clusteredResults && (
+                    <ClusterResults 
+                        clusteredResults={clusteredResults}
+                        handleStatusChange={handleStatusChange}
+                    />
+                )}
             </div>
 
             <button

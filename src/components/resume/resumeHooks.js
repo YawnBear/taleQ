@@ -97,3 +97,53 @@ export function useFilteredResumes(resumes, filterStatus, searchQuery, selectedC
         return true;
     });
 }
+
+// Add this function if you want a separate hook for clustering
+export function useResumeClustering() {
+    const [clusteredResults, setClusteredResults] = useState(null);
+    const [isClustering, setIsClustering] = useState(false);
+    const [clusteringPrompt, setClusteringPrompt] = useState("");
+    
+    const performClustering = async (resumes) => {
+        if (!clusteringPrompt.trim() || !resumes?.length) {
+            return;
+        }
+        
+        setIsClustering(true);
+        
+        try {
+            const response = await fetch("/api/cluster-resumes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt: clusteringPrompt,
+                    resumes,
+                }),
+            });
+            
+            if (!response.ok) {
+                throw new Error("Failed to cluster resumes");
+            }
+            
+            const data = await response.json();
+            setClusteredResults(data);
+            return data;
+        } catch (error) {
+            console.error("Clustering error:", error);
+            throw error;
+        } finally {
+            setIsClustering(false);
+        }
+    };
+    
+    return {
+        clusteredResults,
+        setClusteredResults,
+        isClustering,
+        clusteringPrompt,
+        setClusteringPrompt,
+        performClustering,
+    };
+}
