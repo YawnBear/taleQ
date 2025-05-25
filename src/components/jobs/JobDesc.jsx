@@ -137,7 +137,7 @@ export default function JobDesc() {
 
     return (
         <div className="w-full max-w-[80rem] mx-auto px-2 py-8">
-            <div className="mx-auto p-8">
+            <div className="mx-auto p-5">
                 {/* Header Section */}
                 <div className="bg-gradient-to-r from-emerald-600 to-emerald-400 text-white rounded-2xl p-8 shadow-xl mb-10 flex flex-col md:flex-row justify-between items-center">
                     <div className="border-b border-green-300 pb-4 mb-4">
@@ -147,15 +147,7 @@ export default function JobDesc() {
                         </p>
                     </div>
                 </div>
-                {/* Search Bar */}
-                <div className="mb-8 max-w-xl mx-auto">
-                    <SearchBar 
-                        value={searchQuery} 
-                        onChange={setSearchQuery} 
-                        placeholder="Search job positions..."
-                        className="shadow-md transition-all focus-within:shadow-lg"
-                    />
-                </div>
+                
                 
                 {/* Job Listings */}
                 <div className="px-4">
