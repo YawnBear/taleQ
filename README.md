@@ -1,39 +1,49 @@
-# taleQ
+# :bust_in_silhouette: taleQ - HR Talent Management Solution
 talent acquisition app uses ai to fasten the process of screening through resumes // 
 
-https://tale-q.vercel.app/
+Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
 
-# Features 
+## :pushpin: Key Features 
 - Resume Screening
 - AI-based candidate matching and scoring
 - Spam or fake resume detection
 - Customizable job requirements settings 
 
-# Things to do : 
-- file type validation for cv when uploading (only allow pdf, png)
-- zip file for resume, extract then only upload
+## Things to do : 
 - job position can edit and delete
 - user login (for companies)
-- store resume's into db 
-- take resume from email
-- interview scheduling
-- calendar view
+- Take resume from email
 
+## :computer: Technology Stack 
+- Frontend: React.js, Next.js 
+- Backend: Next.js
+- AI/ML: Google Gemini API
+- Backend as a Service: JamAI Base (database and LLM)
+- Deployment: Vercel
 
-# Installation Guide 
+## :arrow_down: Installation Guide 
 1. Install [Node.js](https://nodejs.org/en/download)
 2. Cloning the repository
 ``` bash
-# Getting the folder from github 
-git clone https://github.com/YawnBear/taleQ.git myproject
+# Getting the folder from GitHub 
+git clone https://github.com/YawnBear/taleQ.git taleQ
 
 # Change directory 
-cd myproject
+cd taleQ
 
-# Install NPM dependancies
+# Install NPM dependencies
 npm install
 
 # Start the application
 npm run dev
 ```
 3. Running it on [http://localhost:3000/](http://localhost:3000/)
+
+## :memo: Future Enhancements 
+1. Auto Resume Retrieving from Email 
+
+## :heart: Contributors 
+1. Ashley Chan Li Ling - Backend Developer 
+2. Lee Zhi Wei - Fronend Developer 
+3. Liew Yu En - Frontend Developer
+4. Loo Tan Yu Xian - Backend Developer

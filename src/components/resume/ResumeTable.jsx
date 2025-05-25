@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import EmailButton from '../ui/EmailButton';
 import ResumeDetailsOverlay from './ResumeDetailsOverlay';
+import {
+  parseContactLinks,
+  parseEducation,
+  parseJobExperience,
+  parseCurriculumActivities,
+  parseSkills,
+  parseAchievements,
+  parseShortlistedReasons
+} from '../../utils/resumeParser';
 
 export default function ResumeTable({
     filteredResumes,
@@ -176,6 +185,81 @@ export default function ResumeTable({
     // Get duplicate count for display
     const duplicateCount = findDuplicates().length;
 
+    // Helper function to get parsed cell value
+    const getCellValue = (resume, column) => {
+        const rawValue = resume[column]?.value || resume[column];
+        
+        try {
+            switch (column) {
+                case 'contact links':
+                    return parseContactLinks(rawValue);
+                case 'education':
+                    return parseEducation(rawValue);
+                case 'job experience':
+                    return parseJobExperience(rawValue);
+                case 'curriculum activities':
+                    return parseCurriculumActivities(rawValue);
+                case 'skills':
+                    return parseSkills(rawValue);
+                case 'achievements':
+                    return parseAchievements(rawValue);
+                case 'shortlisted reasons':
+                    return parseShortlistedReasons(rawValue);
+                case 'projects':
+                    return rawValue === null || rawValue === 'null' || !rawValue ? 'No projects listed' : rawValue;
+                case 'email address':
+                    return rawValue === null || rawValue === 'null' || !rawValue ? 'No email listed' : rawValue;
+                default:
+                    return rawValue || '';
+            }
+        } catch (error) {
+            console.error(`Error parsing ${column}:`, error);
+            console.error('Raw value:', rawValue);
+            return `Error parsing ${column}`;
+        }
+    };
+
+    // Helper function to render skills with special formatting
+    const renderSkillsContent = (skillsText) => {
+        if (!skillsText || skillsText === 'No skills listed') {
+            return <span className="text-gray-400 italic">{skillsText}</span>;
+        }
+
+        const sections = skillsText.split('\n\n');
+        
+        return (
+            <div className="space-y-3">
+                {sections.map((section, index) => {
+                    const lines = section.split('\n');
+                    const category = lines[0];
+                    const skills = lines[1];
+                    
+                    if (!skills) return null;
+                    
+                    const skillArray = skills.split(', ');
+                    
+                    return (
+                        <div key={index} className="space-y-1">
+                            <div className="text-sm text-gray-700">
+                                {category}
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                                {skillArray.map((skill, skillIndex) => (
+                                    <span
+                                        key={skillIndex}
+                                        className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200"
+                                    >
+                                        {skill.trim()}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
+
     return (
         <div className="bg-white rounded-lg shadow overflow-hidden relative">
             {/* Action Bar */}
@@ -209,7 +293,7 @@ export default function ResumeTable({
                                 <>
                                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                     Removing...
                                 </>
@@ -236,7 +320,7 @@ export default function ResumeTable({
                                 <>
                                     <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 714 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
                                     Deleting...
                                 </>
@@ -257,7 +341,7 @@ export default function ResumeTable({
                 <thead className="bg-gray-50">
                     <tr>
                         {/* Select All Checkbox */}
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
                             <input
                                 type="checkbox"
                                 checked={selectedRows.size === filteredResumes.length && filteredResumes.length > 0}
@@ -270,26 +354,25 @@ export default function ResumeTable({
                             .map(([column]) => (
                                 <th 
                                     key={column}
-                                    className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                                    className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                                        column === 'name' ? 'text-center' : 'text-left'
+                                    }`}
                                 >
                                     {column}
                                 </th>
                             ))}
-                        {/* Actions column */}
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
+                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                             Actions
                         </th>
                     </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {filteredResumes.map((resume, index) => {
-                        // Check if this resume is a duplicate
                         const isDuplicate = findDuplicates().some(dup => dup.duplicate.ID === resume.ID);
 
                         return (
                             <tr key={resume.ID || index} className={`hover:bg-gray-50 ${isDuplicate ? 'bg-orange-50' : ''}`}>
-                                {/* Individual Row Checkbox */}
-                                <td className="px-4 py-4 text-sm text-gray-500">
+                                <td className="px-4 py-4 text-sm text-gray-500 text-center">
                                     <input
                                         type="checkbox"
                                         checked={selectedRows.has(resume.ID)}
@@ -302,15 +385,17 @@ export default function ResumeTable({
                                     .map(([column]) => (
                                         <td 
                                             key={column}
-                                            className="px-4 py-4 text-sm text-gray-500"
+                                            className={`px-4 py-4 text-sm text-gray-500 align-top ${
+                                                column === 'name' ? 'text-center' : 'text-left'
+                                            }`}
                                         >
                                             {column === 'name' ? (
-                                                <div className="flex items-center gap-2">
+                                                <div className="flex flex-col items-center gap-2">
                                                     <button
                                                         onClick={() => setSelectedResumeId(resume.ID)}
                                                         className="text-blue-600 hover:text-blue-800 hover:underline font-medium focus:outline-none"
                                                     >
-                                                        {resume[column]}
+                                                        {getCellValue(resume, column)}
                                                     </button>
                                                     {isDuplicate && (
                                                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
@@ -323,19 +408,25 @@ export default function ResumeTable({
                                                     resume={resume} 
                                                     handleStatusChange={handleStatusChange} 
                                                 />
+                                            ) : column === 'skills' ? (
+                                                renderSkillsContent(getCellValue(resume, column))
                                             ) : (
-                                                resume[column]
+                                                <div 
+                                                    className="whitespace-pre-line text-sm leading-relaxed" 
+                                                    title={getCellValue(resume, column)}
+                                                >
+                                                    {getCellValue(resume, column)}
+                                                </div>
                                             )}
                                         </td>
                                     ))}
-                                {/* Actions column */}
-                                <td className="px-4 py-4 text-sm text-gray-500">
+                                <td className="px-4 py-4 text-sm text-gray-500 align-top text-center">
                                     <div className="flex justify-center gap-2">
                                         {resume.shortlisted?.toLowerCase() === 'yes' ? (
                                             <EmailButton 
                                                 candidateId={`${resume.ID}-accept`}
-                                                email={resume['email address']}
-                                                name={resume.name}
+                                                email={resume['email address']?.value || resume['email address']}
+                                                name={resume.name?.value || resume.name}
                                                 type="accepted"
                                                 onEmailSent={(id) => setNotifiedCandidates(prev => new Set([...prev, id]))}
                                                 isNotified={notifiedCandidates.has(`${resume.ID}-accept`)}
@@ -343,8 +434,8 @@ export default function ResumeTable({
                                         ) : ['rejected', 'no'].includes(resume.shortlisted?.toLowerCase()) ? (
                                             <EmailButton 
                                                 candidateId={`${resume.ID}-reject`}
-                                                email={resume['email address']}
-                                                name={resume.name}
+                                                email={resume['email address']?.value || resume['email address']}
+                                                name={resume.name?.value || resume.name}
                                                 type="rejected"
                                                 onEmailSent={(id) => setNotifiedCandidates(prev => new Set([...prev, id]))}
                                                 isNotified={notifiedCandidates.has(`${resume.ID}-reject`)}
