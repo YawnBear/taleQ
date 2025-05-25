@@ -33,81 +33,102 @@ export async function GET(request) {
       }
 
       const details = await detailsResponse.json();
-
       return NextResponse.json({ 
         success: true, 
         details: details 
       });
     } 
-else if (action === 'view') {
-  // Step 1: Get the URI of the file (cv column)
-  const metadataResponse = await fetch(
-    `https://api.jamaibase.com/api/v1/gen_tables/action/${process.env.JAMAI_ACTION_TABLE_ID}/rows/${resumeId}?columns=cv`,
-    {
-      method: "GET",
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
-        "X-PROJECT-ID": process.env.JAMAI_PROJECT_ID,
-      },
+    else if (action === 'view') {
+      // Step 1: Get the file URI from the database
+      const metadataResponse = await fetch(
+        `https://api.jamaibase.com/api/v1/gen_tables/action/${process.env.JAMAI_ACTION_TABLE_ID}/rows/${resumeId}?columns=${process.env.JAMAI_ACTION_COLUMN_ID}`,
+        {
+          method: "GET",
+          headers: {
+            accept: "application/json",
+            authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
+            "X-PROJECT-ID": process.env.JAMAI_PROJECT_ID,
+          },
+        }
+      );
+
+      if (!metadataResponse.ok) {
+        throw new Error(`Failed to fetch file metadata: ${metadataResponse.statusText}`);
+      }
+
+      const metadata = await metadataResponse.json();
+      console.log('Metadata response:', metadata);
+      
+      // Try different ways to extract the URI
+      const uri = metadata?.cv?.value || metadata?.cv || metadata?.[process.env.JAMAI_ACTION_COLUMN_ID]?.value || metadata?.[process.env.JAMAI_ACTION_COLUMN_ID];
+      
+      console.log('Extracted URI:', uri);
+
+      if (!uri) {
+        return NextResponse.json(
+          { success: false, error: 'No CV URI found for this resume ID', metadata },
+          { status: 404 }
+        );
+      }
+
+      // Step 2: Resolve the file URL from the URI
+      const rawFileResponse = await fetch(
+        'https://api.jamaibase.com/api/v1/files/url/raw',
+        {
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            'content-type': 'application/json',
+            authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
+            'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
+          },
+          body: JSON.stringify({ uris: [uri] }),
+        }
+      );
+
+      if (!rawFileResponse.ok) {
+        const errorText = await rawFileResponse.text();
+        throw new Error(`Failed to resolve file from URI: ${rawFileResponse.statusText} - ${errorText}`);
+      }
+
+      const fileData = await rawFileResponse.json();
+      console.log('File resolution response:', fileData);
+      
+      // Extract the URL from the response
+      const fileUrl = fileData?.urls?.[0] || fileData?.url || fileData?.urls;
+      
+      console.log('Resolved file URL:', fileUrl);
+
+      if (!fileUrl) {
+        return NextResponse.json(
+          { success: false, error: 'Failed to resolve file URL', fileData },
+          { status: 500 }
+        );
+      }
+
+      // Step 3: Fetch the actual file content
+      const fileResponse = await fetch(fileUrl);
+      
+      if (!fileResponse.ok) {
+        throw new Error(`Failed to fetch file content: ${fileResponse.statusText}`);
+      }
+
+      const fileBuffer = await fileResponse.arrayBuffer();
+      
+      // Determine content type based on file extension or default to PDF
+      const contentType = uri.toLowerCase().includes('.pdf') ? 'application/pdf' : 'application/octet-stream';
+      
+      // Return the file directly with proper headers for inline viewing
+      return new NextResponse(fileBuffer, {
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': 'inline; filename="resume.pdf"',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        },
+      });
     }
-  );
-
-  if (!metadataResponse.ok) {
-    throw new Error(`Failed to fetch file metadata: ${metadataResponse.statusText}`);
-  }
-
-  const metadata = await metadataResponse.json();
-  const uri = metadata?.cv;
-
-  if (!uri) {
-    return NextResponse.json(
-      { success: false, error: 'No CV URI found for this resume ID' },
-      { status: 404 }
-    );
-  }
-
-  // Step 2: Resolve the file using the URL Raw endpoint
-  const rawFileResponse = await fetch(
-    'https://api.jamaibase.com/api/v1/files/url/raw',
-    {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Bearer ${process.env.JAMAI_API_KEY}`,
-        'X-PROJECT-ID': process.env.JAMAI_PROJECT_ID,
-      },
-      body: JSON.stringify({ uris: [uri.value] }),
-    }
-  );
-
-  if (!rawFileResponse.ok) {
-    throw new Error(`Failed to resolve file from URI: ${rawFileResponse.statusText}`);
-  }
-
-  const fileData = await rawFileResponse.json();
-  const fileUrl = fileData.urls;
-
-  if (!fileUrl) {
-    console.error('Resolved file URL is missing');
-    return NextResponse.json(
-      { success: false, error: 'Resolved file URL is missing' },
-      { status: 500 }
-    );
-  }
-
-  // Step 3: Fetch the actual file blob from the resolved URL
-  const actualFile = await fetch(fileUrl);
-  const fileBlob = await actualFile.blob();
-
-  return new NextResponse(fileBlob, {
-    headers: {
-      'Content-Type': fileBlob.type || 'application/octet-stream',
-      'Content-Disposition': 'inline',
-    },
-  });
-}
     else {
       return NextResponse.json({ 
         success: false, 

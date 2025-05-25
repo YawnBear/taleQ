@@ -12,6 +12,7 @@ export default function ResumeTable({
 }) {
     const [selectedRows, setSelectedRows] = useState(new Set());
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isDuplicateChecking, setIsDuplicateChecking] = useState(false);
     const [selectedResumeId, setSelectedResumeId] = useState(null);
 
     const handleSelectAll = (e) => {
@@ -30,6 +31,94 @@ export default function ResumeTable({
             newSelectedRows.add(resumeId);
         }
         setSelectedRows(newSelectedRows);
+    };
+
+    const findDuplicates = () => {
+        const duplicates = [];
+        const seen = new Map();
+        
+        filteredResumes.forEach((resume) => {
+            const name = resume.name?.toLowerCase().trim();
+            const email = resume['email address']?.toLowerCase().trim();
+            
+            // Skip if name or email is missing
+            if (!name || !email) return;
+            
+            const key = `${name}|${email}`;
+            
+            if (seen.has(key)) {
+                // Mark both the original and duplicate
+                const original = seen.get(key);
+                duplicates.push({
+                    original: original,
+                    duplicate: resume,
+                    name: resume.name,
+                    email: resume['email address']
+                });
+            } else {
+                seen.set(key, resume);
+            }
+        });
+        
+        return duplicates;
+    };
+
+    const handleRemoveDuplicates = async () => {
+        setIsDuplicateChecking(true);
+        
+        try {
+            const duplicates = findDuplicates();
+            
+            if (duplicates.length === 0) {
+                alert("No duplicates found!");
+                return;
+            }
+
+            const duplicateDetails = duplicates.map(dup => 
+                `${dup.name} (${dup.email})`
+            ).join('\n');
+
+            const confirmDelete = window.confirm(
+                `Found ${duplicates.length} duplicate resume(s):\n\n${duplicateDetails}\n\nDelete the duplicate entries? This action cannot be undone.`
+            );
+
+            if (!confirmDelete) return;
+
+            // Extract IDs of duplicate resumes to delete (keep the original, delete the duplicate)
+            const duplicateIds = duplicates.map(dup => dup.duplicate.ID);
+
+            // Delete duplicates from backend
+            const deletePromises = duplicateIds.map(async (resumeId) => {
+                const response = await fetch('/api/delete-resume', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ resumeId })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`Failed to delete resume ${resumeId}: ${errorData.message}`);
+                }
+
+                return resumeId;
+            });
+
+            const deletedIds = await Promise.all(deletePromises);
+            
+            // Notify parent component to update the resume list
+            if (onDeleteResume) {
+                onDeleteResume(deletedIds);
+            }
+
+            alert(`Successfully removed ${deletedIds.length} duplicate resume(s).`);
+        } catch (error) {
+            console.error("Duplicate removal error:", error);
+            alert(`Failed to remove duplicates: ${error.message}`);
+        } finally {
+            setIsDuplicateChecking(false);
+        }
     };
 
     const handleDeleteSelected = async () => {
@@ -84,39 +173,85 @@ export default function ResumeTable({
         }
     };
 
+    // Get duplicate count for display
+    const duplicateCount = findDuplicates().length;
+
     return (
         <div className="bg-white rounded-lg shadow overflow-hidden relative">
-            {/* Delete Button */}
-            {selectedRows.size > 0 && (
-                <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex justify-between items-center">
-                    <span className="text-red-700 text-sm font-medium">
-                        {selectedRows.size} resume(s) selected
-                    </span>
-                    <button
-                        onClick={handleDeleteSelected}
-                        disabled={isDeleting}
-                        className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 
-                                 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                    >
-                        {isDeleting ? (
-                            <>
-                                <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Deleting...
-                            </>
-                        ) : (
-                            <>
-                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                                Delete Selected
-                            </>
-                        )}
-                    </button>
+            {/* Action Bar */}
+            <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex justify-between items-center">
+                <div className="flex items-center gap-4">
+                    {/* Selected resumes info */}
+                    {selectedRows.size > 0 && (
+                        <span className="text-red-700 text-sm font-medium">
+                            {selectedRows.size} resume(s) selected
+                        </span>
+                    )}
+                    
+                    {/* Duplicate info */}
+                    {duplicateCount > 0 && (
+                        <span className="text-orange-700 text-sm font-medium">
+                            {duplicateCount} duplicate(s) found
+                        </span>
+                    )}
                 </div>
-            )}
+
+                <div className="flex gap-2">
+                    {/* Remove Duplicates Button */}
+                    {duplicateCount > 0 && (
+                        <button
+                            onClick={handleRemoveDuplicates}
+                            disabled={isDuplicateChecking}
+                            className="px-4 py-2 bg-orange-600 text-white text-sm rounded-md hover:bg-orange-700 
+                                     disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            {isDuplicateChecking ? (
+                                <>
+                                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Removing...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                    </svg>
+                                    Remove Duplicates ({duplicateCount})
+                                </>
+                            )}
+                        </button>
+                    )}
+
+                    {/* Delete Selected Button */}
+                    {selectedRows.size > 0 && (
+                        <button
+                            onClick={handleDeleteSelected}
+                            disabled={isDeleting}
+                            className="px-4 py-2 bg-red-600 text-white text-sm rounded-md hover:bg-red-700 
+                                     disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            {isDeleting ? (
+                                <>
+                                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Deleting...
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                    Delete Selected
+                                </>
+                            )}
+                        </button>
+                    )}
+                </div>
+            </div>
 
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
@@ -140,7 +275,7 @@ export default function ResumeTable({
                                     {column}
                                 </th>
                             ))}
-                        {/* Actions column - made wider to fit both buttons */}
+                        {/* Actions column */}
                         <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-32">
                             Actions
                         </th>
@@ -148,10 +283,11 @@ export default function ResumeTable({
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                     {filteredResumes.map((resume, index) => {
+                        // Check if this resume is a duplicate
+                        const isDuplicate = findDuplicates().some(dup => dup.duplicate.ID === resume.ID);
 
-                        
                         return (
-                            <tr key={resume.ID || index} className="hover:bg-gray-50">
+                            <tr key={resume.ID || index} className={`hover:bg-gray-50 ${isDuplicate ? 'bg-orange-50' : ''}`}>
                                 {/* Individual Row Checkbox */}
                                 <td className="px-4 py-4 text-sm text-gray-500">
                                     <input
@@ -169,12 +305,19 @@ export default function ResumeTable({
                                             className="px-4 py-4 text-sm text-gray-500"
                                         >
                                             {column === 'name' ? (
-                                                <button
-                                                    onClick={() => setSelectedResumeId(resume.ID)}
-                                                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium focus:outline-none"
-                                                >
-                                                    {resume[column]}
-                                                </button>
+                                                <div className="flex items-center gap-2">
+                                                    <button
+                                                        onClick={() => setSelectedResumeId(resume.ID)}
+                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium focus:outline-none"
+                                                    >
+                                                        {resume[column]}
+                                                    </button>
+                                                    {isDuplicate && (
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800">
+                                                            Duplicate
+                                                        </span>
+                                                    )}
+                                                </div>
                                             ) : column === 'shortlisted' ? (
                                                 <StatusSelector 
                                                     resume={resume} 
@@ -185,10 +328,9 @@ export default function ResumeTable({
                                             )}
                                         </td>
                                     ))}
-                                {/* Actions column with email and view PDF buttons */}
+                                {/* Actions column */}
                                 <td className="px-4 py-4 text-sm text-gray-500">
                                     <div className="flex justify-center gap-2">
-                                        {/* Email Button - unchanged */}
                                         {resume.shortlisted?.toLowerCase() === 'yes' ? (
                                             <EmailButton 
                                                 candidateId={`${resume.ID}-accept`}
@@ -232,7 +374,6 @@ export default function ResumeTable({
 }
 
 function StatusSelector({ resume, handleStatusChange }) {
-    // Get the current status, defaulting to 'pending' if null/undefined
     const currentStatus = resume.shortlisted?.toLowerCase() || 'pending';
     
     return (
@@ -240,32 +381,61 @@ function StatusSelector({ resume, handleStatusChange }) {
             <select
                 value={currentStatus}
                 onChange={(e) => handleStatusChange(resume.ID, e.target.value)}
-                className={`py-1.5 rounded-full text-xs font-medium cursor-pointer border-0 outline-none w-28 text-center
+                className={`py-1.5 px-3 rounded-full text-xs font-medium cursor-pointer 
+                    border-0 outline-none w-32 text-center
+                    focus:ring-2 focus:ring-offset-1
                     ${currentStatus === 'yes' 
-                        ? 'bg-green-100 text-green-800 hover:bg-green-200'
+                        ? 'bg-green-100 text-green-800 hover:bg-green-200 focus:ring-green-300'
                         : currentStatus === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'
+                          ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 focus:ring-yellow-300'
                           : currentStatus === 'rejected'
-                            ? 'bg-red-100 text-red-800 hover:bg-red-200'
+                            ? 'bg-red-100 text-red-800 hover:bg-red-200 focus:ring-red-300'
                             : ['interviewed', 'offered'].includes(currentStatus)
-                              ? 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                              : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200'} // Default fallback to pending style
-                    transition-colors duration-200`}
-                style={{ WebkitAppearance: 'none', appearance: 'none' }}
+                              ? 'bg-blue-100 text-blue-800 hover:bg-blue-200 focus:ring-blue-300'
+                              : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200 focus:ring-yellow-300'}
+                    transition-all duration-200 shadow-sm hover:shadow-md
+                    appearance-none bg-no-repeat bg-right bg-[length:12px_12px]`}
+                style={{ 
+                    WebkitAppearance: 'none', 
+                    appearance: 'none',
+                    backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+                    backgroundPosition: 'right 8px center',
+                    paddingRight: '28px'
+                }}
             >
-                <option value="pending" className="bg-yellow-100 text-yellow-800 font-medium">
+                <option 
+                    value="pending" 
+                    className="bg-yellow-100 text-yellow-800 font-medium"
+                    style={{ backgroundColor: '#fef3c7', color: '#92400e' }}
+                >
                     Pending
                 </option>
-                <option value="rejected" className="bg-red-100 text-red-800 font-medium">
+                <option 
+                    value="rejected" 
+                    className="bg-red-100 text-red-800 font-medium"
+                    style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}
+                >
                     Rejected
                 </option>
-                <option value="yes" className="bg-green-100 text-green-800 font-medium">
+                <option 
+                    value="yes" 
+                    className="bg-green-100 text-green-800 font-medium"
+                    style={{ backgroundColor: '#dcfce7', color: '#166534' }}
+                >
                     Shortlisted
                 </option>
-                <option value="interviewed" className="bg-gray-100 text-gray-800 font-medium">
+                <option 
+                    value="interviewed" 
+                    className="bg-blue-100 text-blue-800 font-medium"
+                    style={{ backgroundColor: '#dbeafe', color: '#1e40af' }}
+                >
                     Interviewed
                 </option>
-                <option value="offered" className="bg-gray-100 text-gray-800 font-medium">
+                <option 
+                    value="offered" 
+                    className="bg-blue-100 text-blue-800 font-medium"
+                    style={{ backgroundColor: '#dbeafe', color: '#1e40af' }}
+                >
                     Offered
                 </option>
             </select>

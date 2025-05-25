@@ -35,15 +35,10 @@ export default function ResumeDetailsOverlay({ resumeId, onClose }) {
     }
   }, [resumeId]);
 
-  const handleViewResume = async () => {
-    try {
-      const res = await fetch(`/api/view-resume?id=${resumeId}&action=view`);
-      const blob = await res.blob();
-      const url = window.URL.createObjectURL(blob);
-      window.open(url, '_blank');
-    } catch (error) {
-      console.error('Error viewing resume:', error);
-    }
+  const handleViewResume = () => {
+    // Open the resume in a new tab - the API now returns the file directly
+    const viewUrl = `/api/view-resume?id=${resumeId}&action=view`;
+    window.open(viewUrl, '_blank');
   };
 
   if (!details && !loading) return null;
@@ -120,6 +115,27 @@ export default function ResumeDetailsOverlay({ resumeId, onClose }) {
                 <div className="mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">Achievements</h3>
                   <p className="text-gray-600 whitespace-pre-line">{details.achievements}</p>
+                </div>
+              )}
+
+              {details.certifications && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Certifications</h3>
+                  <p className="text-gray-600 whitespace-pre-line">{details.certifications}</p>
+                </div>
+              )}
+
+              {details['curriculum activities'] && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Curriculum Activities</h3>
+                  <p className="text-gray-600 whitespace-pre-line">{details['curriculum activities']}</p>
+                </div>
+              )}
+
+              {details['contact links'] && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Contact Links</h3>
+                  <p className="text-gray-600 whitespace-pre-line">{details['contact links']}</p>
                 </div>
               )}
             </div>
