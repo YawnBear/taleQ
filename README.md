@@ -1,7 +1,7 @@
 # taleQ - HR Talent Management Solution
 talent acquisition app uses ai to fasten the process of screening through resumes // 
 
-Live Demo : [](https://tale-q.vercel.app/)
+Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
 
 # Features 
 - Resume Screening
