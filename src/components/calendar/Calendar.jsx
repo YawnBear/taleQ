@@ -199,7 +199,7 @@ export default function Calendar() {
                         <div
                             key={date.toISOString()}
                             onClick={() => date.getDay() !== 0 && date.getDay() !== 6 && handleDateClick(date)}
-                            className={`bg-white p-2 h-32 relative ${
+                            className={`bg-white p-2 h-26 relative ${
                                 !isSameMonth(date, currentDate) ? 'text-gray-400' :
                                 isToday(date) ? 'bg-emerald-50' :
                                 date.getDay() === 0 || date.getDay() === 6 ? 'bg-gray-50' : ''
