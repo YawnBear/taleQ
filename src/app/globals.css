@@ -64,6 +64,7 @@ input:focus-visible,
 textarea:focus-visible {
   border-color: #1c843e;
   box-shadow: 0 0 0 3px rgba(52, 168, 90, 0.25);
+  border-radius: 40px;
   outline: none;
 }
 

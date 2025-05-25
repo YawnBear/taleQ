@@ -11,21 +11,25 @@ export default function SearchBar({ value, onChange }) {
       sx={{
         "& .MuiOutlinedInput-root": {
           color: "black",
-          borderRadius: "8px",
+          borderRadius: "40px",
           backgroundColor: "white",
           "& .MuiOutlinedInput-notchedOutline": {
             borderColor: "black",
+            borderRadius: "40px"
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: "#1c843e",
+            borderRadius: "40px"
           },
           "&:hover:not(.Mui-focused) .MuiOutlinedInput-notchedOutline": {
             borderColor: "#1c843e",
+            borderRadius: "40px"
           }
         },
         "& .MuiInputLabel-outlined": {
           color: "black",
-          "&.Mui-focused": { color: "black" }
+          borderRadius: "40px",
+          "&.Mui-focused": { color: "black", borderRadius: "40px", }
         }
       }}
     />
