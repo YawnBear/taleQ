@@ -109,7 +109,7 @@ export default function JobPosting({handleToggleForm,}) {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[10vh] bg-[var(--background)] py-8">
-      <div>
+      <div className="w-full bg-white py-4 shadow-lg rounded-2xl border-2 border-emerald-200">
         {/* Search Bar */}
         <div className="w-full flex flex-col md:flex-row justify-between items-center">
           <div className="w-2/3 py-3 px-3 ml-2">
