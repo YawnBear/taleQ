@@ -3,25 +3,25 @@ talent acquisition app uses ai to fasten the process of screening through resume
 
 Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
 
-# :pushpin: Features 
+## :pushpin: Key Features 
 - Resume Screening
 - AI-based candidate matching and scoring
 - Spam or fake resume detection
 - Customizable job requirements settings 
 
-# Things to do : 
+## Things to do : 
 - job position can edit and delete
 - user login (for companies)
 - Take resume from email
 
-# :computer: Technology Stack 
+## :computer: Technology Stack 
 - Frontend: React.js, Next.js 
 - Backend: Next.js
 - AI/ML: Google Gemini API
 - Backend as a Service: JamAI Base (database and LLM)
 - Deployment: Vercel
 
-# :arrow_down: Installation Guide 
+## :arrow_down: Installation Guide 
 1. Install [Node.js](https://nodejs.org/en/download)
 2. Cloning the repository
 ``` bash
@@ -39,10 +39,10 @@ npm run dev
 ```
 3. Running it on [http://localhost:3000/](http://localhost:3000/)
 
-# :memo: Future Enhancements 
+## :memo: Future Enhancements 
 1. Auto Resume Retrieving from Email 
 
-# :heart: Contributors 
+## :heart: Contributors 
 1. Ashley Chan Li Ling - Backend Developer 
 2. Lee Zhi Wei - Fronend Developer 
 3. Liew Yu En - Frontend Developer
