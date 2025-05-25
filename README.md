@@ -1,9 +1,9 @@
-# taleQ - HR Talent Management Solution
+# :bust_in_silhouette: taleQ - HR Talent Management Solution
 talent acquisition app uses ai to fasten the process of screening through resumes // 
 
 Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
 
-# Features 
+# :pushpin: Features 
 - Resume Screening
 - AI-based candidate matching and scoring
 - Spam or fake resume detection
@@ -14,14 +14,14 @@ Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
 - user login (for companies)
 - Take resume from email
 
-# Technology Stack 
-Frontend: React.js
-Backend: Next.js 
-Ai/ML: Gemini 
-Backend as a Service: JamAI Base 
-Deployment: Vercel
+# :computer: Technology Stack 
+- Frontend: React.js, Next.js 
+- Backend: Next.js
+- AI/ML: Google Gemini API
+- Backend as a Service: JamAI Base (database and LLM)
+- Deployment: Vercel
 
-# Installation Guide 
+# :arrow_down: Installation Guide 
 1. Install [Node.js](https://nodejs.org/en/download)
 2. Cloning the repository
 ``` bash
@@ -39,7 +39,10 @@ npm run dev
 ```
 3. Running it on [http://localhost:3000/](http://localhost:3000/)
 
-# Contributors 
+# :memo: Future Enhancements 
+1. Auto Resume Retrieving from Email 
+
+# :heart: Contributors 
 1. Ashley Chan Li Ling - Backend Developer 
 2. Lee Zhi Wei - Fronend Developer 
 3. Liew Yu En - Frontend Developer
