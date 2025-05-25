@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import EmailButton from '../ui/EmailButton';
+import ResumeDetailsOverlay from './ResumeDetailsOverlay';
 
 export default function ResumeTable({
     filteredResumes,
@@ -11,6 +12,7 @@ export default function ResumeTable({
 }) {
     const [selectedRows, setSelectedRows] = useState(new Set());
     const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedResumeId, setSelectedResumeId] = useState(null);
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
@@ -166,7 +168,14 @@ export default function ResumeTable({
                                             key={column}
                                             className="px-4 py-4 text-sm text-gray-500"
                                         >
-                                            {column === 'shortlisted' ? (
+                                            {column === 'name' ? (
+                                                <button
+                                                    onClick={() => setSelectedResumeId(resume.ID)}
+                                                    className="text-blue-600 hover:text-blue-800 hover:underline font-medium focus:outline-none"
+                                                >
+                                                    {resume[column]}
+                                                </button>
+                                            ) : column === 'shortlisted' ? (
                                                 <StatusSelector 
                                                     resume={resume} 
                                                     handleStatusChange={handleStatusChange} 
@@ -210,6 +219,14 @@ export default function ResumeTable({
                     })}
                 </tbody>
             </table>
+
+            {/* Resume Details Overlay */}
+            {selectedResumeId && (
+                <ResumeDetailsOverlay
+                    resumeId={selectedResumeId}
+                    onClose={() => setSelectedResumeId(null)}
+                />
+            )}
         </div>
     );
 }
