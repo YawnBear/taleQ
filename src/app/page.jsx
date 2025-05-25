@@ -12,7 +12,7 @@ export default function Home() {
     return (
         <>
         <div className="flex h-screen">
-            <nav className="fixed w-48 h-screen bg-emerald-50 border-r border-gray-300 flex flex-col justify-between shadow-lg">
+            <nav className="fixed w-48 h-screen bg-neutral-50 border-r border-gray-300 flex flex-col justify-between shadow-lg">
                 <div>
                     <ul className="space-y-2">
                         <div>
@@ -23,7 +23,7 @@ export default function Home() {
                         <li className="mt-20">
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "Resume" ? "bg-green-500 text-white" : "hover:bg-slate-300"
+                                    currentPage === "Resume" ? "bg-green-100 text-emerald-500" : "hover:bg-slate-200"
                                 }`}
                                 onClick={() => setCurrentPage("Resume")}
                             >
@@ -33,7 +33,7 @@ export default function Home() {
                         <li>
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "jobPosition" ? "bg-green-500 text-white" : "hover:bg-slate-300"
+                                    currentPage === "jobPosition" ? "bg-green-100 text-emerald-500" : "hover:bg-slate-200"
                                 }`}
                                 onClick={() => setCurrentPage("jobPosition")}
                             >
@@ -43,7 +43,7 @@ export default function Home() {
                         <li>
                             <button
                                 className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "Calendar" ? "bg-green-500 text-white" : "hover:bg-slate-300"
+                                    currentPage === "Calendar" ? "bg-green-100 text-emerald-500" : "hover:bg-slate-200"
                                 }`}
                                 onClick={() => setCurrentPage("Calendar")}
                             >
