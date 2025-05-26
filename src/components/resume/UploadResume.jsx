@@ -168,7 +168,7 @@ export default function UploadResume() {
 
     return (
         <>
-            <div className="w-full max-w-[100rem] mx-auto px-2 py-8">
+            <div className="w-full max-w-[100rem] mx-auto px-6 py-8">
                 <ResumeFilters 
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}

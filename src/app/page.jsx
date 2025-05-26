@@ -37,7 +37,7 @@ export default function Home() {
                                 }`}
                                 onClick={() => setCurrentPage("jobPosition")}
                             >
-                                Job Position
+                                Job Listings
                             </button>
                         </li>
                         <li>
