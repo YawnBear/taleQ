@@ -18,8 +18,7 @@ export default function ResumeFilters({
                     <p>Write something.........................................................</p>
                 </div>
             </div>
-
-            <div className="mb-6 bg-white p-4 rounded-lg shadow-md border border-emerald-200">
+            <div className="mb-6 bg-gray-50 p-4 rounded-lg shadow-md">
                 <h3 className="text-sm font-medium text-gray-700 mb-3">Display Columns:</h3>
                 <div className="flex flex-wrap gap-7">
                     {Object.entries(selectedColumns).map(([column, isSelected]) => (
@@ -42,30 +41,30 @@ export default function ResumeFilters({
                     ))}
                 </div>
             </div>
-            <div className="flex items-center justify-between mb-6 mt-3">
+            <div className="flex items-center justify-between py-4 px-4">
                 
-                <div className="w-1/2">
-                    <SearchBar value={searchQuery} onChange={setSearchQuery}/>
-                </div>
-                <div className="flex items-center gap-2">
-                    <label htmlFor="statusFilter" className="text-sm text-gray-600">
-                        Filter By Status:
-                    </label>
-                    <select
-                        id="statusFilter"
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="py-1.5 px-3 rounded-md text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                    >
-                        <option value="all">All Candidates</option>
-                        <option value="pending">Pending Only</option>
-                        <option value="yes">Shortlisted Only</option>
-                        <option value="rejected">Rejected Only</option>
-                        <option value="interviewed">Interviewed Only</option>
-                        <option value="offered">Offered Only</option>
-                    </select>
-                </div>
-            </div>
+                    <div className="w-1/2">
+                        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                    </div>
+                                <div className="flex items-center gap-2">
+                                    <label htmlFor="statusFilter" className="text-sm text-gray-600">
+                                        Filter By Status:
+                                    </label>
+                                    <select
+                                        id="statusFilter"
+                                        value={filterStatus}
+                                        onChange={(e) => setFilterStatus(e.target.value)}
+                                        className="py-1.5 px-3 rounded-md text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                    >
+                                        <option value="all">All Candidates</option>
+                                        <option value="pending">Pending Only</option>
+                                        <option value="yes">Shortlisted Only</option>
+                                        <option value="rejected">Rejected Only</option>
+                                        <option value="interviewed">Interviewed Only</option>
+                                        <option value="offered">Offered Only</option>
+                                    </select>
+                                </div>                                
+                            </div>          
         </>
     );
 }
