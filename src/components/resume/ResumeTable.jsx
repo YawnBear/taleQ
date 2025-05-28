@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ChevronDown, ChevronUp} from 'lucide-react';
 import EmailButton from '../ui/EmailButton';
 import ResumeDetailsOverlay from './ResumeDetailsOverlay';
 import {
@@ -15,6 +16,7 @@ export default function ResumeTable({
     filteredResumes,
     selectedColumns,
     handleStatusChange,
+    handleColumnChange,
     notifiedCandidates,
     setNotifiedCandidates,
     onDeleteResume
@@ -218,7 +220,10 @@ export default function ResumeTable({
             return `Error parsing ${column}`;
         }
     };
+    //displace column
+    const [showColumns, setShowColumns] = useState(false);
 
+    
     // Helper function to render skills with special formatting
     const renderSkillsContent = (skillsText) => {
         if (!skillsText || skillsText === 'No skills listed') {
@@ -339,6 +344,48 @@ export default function ResumeTable({
 
             <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
+                    {/* Display Columns Toggle Section */}
+                    <tr>
+                        <th colSpan={Object.values(selectedColumns).filter(Boolean).length + 2}
+                            className="bg-gray-50 px-2 py-4">
+                            <div className="bg-gray-50 p-4  ">
+                                <div 
+                                    className="flex justify-between items-center cursor-pointer"
+                                    onClick={() => setShowColumns(!showColumns)}
+                                >
+                                    <h3 className="text-sm font-medium text-gray-700">Display Columns:</h3>
+                                    {showColumns ? (
+                                        <ChevronUp className="w-4 h-4 text-gray-600" />
+                                    ) : (
+                                        <ChevronDown className="w-4 h-4 text-gray-600" />
+                                    )}
+                                </div>
+
+                                {showColumns && (
+                                    <div className="flex flex-wrap gap-7 mt-3">
+                                        {Object.entries(selectedColumns).map(([column, isSelected]) => (
+                                            <button 
+                                                key={column}
+                                                onClick={() => handleColumnChange(column)}
+                                                disabled={column === 'name' || column === 'shortlisted'}
+                                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200
+                                                    ${isSelected
+                                                        ? 'bg-emerald-100 text-green-800 hover:bg-green-200'
+                                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                    } ${(column === 'name' || column === 'shortlisted') 
+                                                        ? 'cursor-not-allowed bg-emerald-100 text-green-800' 
+                                                        : 'cursor-pointer'}`}
+                                            >
+                                                <span className="capitalize">
+                                                    {column}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </th>
+                    </tr>
                     <tr>
                         {/* Select All Checkbox */}
                         <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-12">
