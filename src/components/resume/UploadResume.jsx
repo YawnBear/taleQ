@@ -36,7 +36,6 @@ export default function UploadResume() {
         certifications: false,
         'shortlisted reasons': false,
         shortlisted: true
-        // Removed 'ai detection': false
     });
 
     const handleColumnChange = (columnName) => {
