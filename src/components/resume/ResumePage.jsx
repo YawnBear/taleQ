@@ -6,7 +6,7 @@ import UploadModal from "./UploadModal";
 import ClusteringPanel from "./ClusteringPanel";
 import ClusterResults from "./ClusterResults";
 
-export default function UploadResume() {
+export default function ResumePage() {
     const [showOverlay, setShowOverlay] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");

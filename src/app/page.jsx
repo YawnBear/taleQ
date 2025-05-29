@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import JobDesc from "@/components/jobs/JobDesc";
-import UploadResume from "@/components/resume/UploadResume";
+import ResumePage from "@/components/resume/ResumePage";
 import Calendar from "@/components/calendar/Calendar";
 import Settings from "@/components/Settings";
 
@@ -71,7 +71,7 @@ export default function Home() {
             </nav>
             <main className="flex-1 ml-48">
                 {currentPage === "jobPosition" && <JobDesc />}
-                {currentPage === "Resume" && <UploadResume />}
+                {currentPage === "Resume" && <ResumePage />}
                 {currentPage === "Calendar" && <Calendar />}
                 {currentPage === "Settings" && <Settings />}
             </main>
