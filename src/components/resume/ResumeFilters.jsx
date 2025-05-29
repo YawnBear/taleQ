@@ -10,7 +10,6 @@ export default function ResumeFilters({
     selectedColumns, 
     handleColumnChange
 }) { 
-    const [showColumns, setShowColumns] = useState(false);
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
     const filterOptions = [
@@ -29,42 +28,18 @@ export default function ResumeFilters({
 
     return (
         <>
+            <div className="flex items-center justify-between py-4 px-2">
+                <div className="w-2/3 items-center">
+                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                </div>
+            </div>
             {/* Header Section */}
-            <div className="px-2 py-8">
-                <div className="border-b border-green-300 pb-4 mb-4">
-                    <h1 className="text-4xl font-bold">Resume</h1>
-                </div>
-            </div>
-
-            {/* Column Selection */}
-            <div className="mb-6 bg-gray-50 p-4 rounded-lg shadow-md mx-2">
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Display Columns:</h3>
-                <div className="flex flex-wrap gap-2">
-                    {Object.entries(selectedColumns).map(([column, isSelected]) => (
-                        <button 
-                            key={column}
-                            onClick={() => handleColumnChange(column)}
-                            disabled={column === 'name' || column === 'shortlisted'}
-                            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200
-                                ${isSelected
-                                    ? 'bg-emerald-100 text-green-800 hover:bg-green-200'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                } ${(column === 'name' || column === 'shortlisted') 
-                                    ? 'cursor-not-allowed bg-emerald-100 text-green-800' 
-                                    : 'cursor-pointer'}`}
-                        >
-                            <span className="capitalize">
-                                {column}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-            </div>
+            
 
             {/* Search and Filter Section */}
-            <div className="flex items-center justify-between py-4 px-2">
-                <div className="w-1/2">
-                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
+            <div className="flex items-center justify-between py-2 px-2">
+                <div className="px-2 py-8">
+                    <h1 className="text-4xl font-bold">Resume</h1>
                 </div>
                 <div className="relative">
                     <button
@@ -98,7 +73,7 @@ export default function ResumeFilters({
                         </div>
                     )}
                 </div>
-            </div>
+            </div> 
         </>
     );
 }
