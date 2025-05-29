@@ -184,6 +184,7 @@ export default function UploadResume() {
                     notifiedCandidates={notifiedCandidates}
                     setNotifiedCandidates={setNotifiedCandidates}
                     onDeleteResume={handleDeleteResumes}
+                    handleColumnChange={handleColumnChange}
                 />
             </div>
 

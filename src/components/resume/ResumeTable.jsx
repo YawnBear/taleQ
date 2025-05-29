@@ -16,7 +16,6 @@ export default function ResumeTable({
     filteredResumes,
     selectedColumns,
     handleStatusChange,
-    handleColumnChange,
     notifiedCandidates,
     setNotifiedCandidates,
     onDeleteResume
@@ -342,13 +341,15 @@ export default function ResumeTable({
                 </div>
             </div>
 
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="min-w-full divide-y divide-gray-200">       
                 <thead className="bg-gray-50">
                     {/* Display Columns Toggle Section */}
-                    <tr>
-                        <th colSpan={Object.values(selectedColumns).filter(Boolean).length + 2}
-                            className="bg-gray-50 px-2 py-4">
-                            <div className="bg-gray-50 p-4  ">
+                     <tr>
+                        <th
+                            colSpan={Object.values(selectedColumns).filter(Boolean).length + 2}
+                            className="bg-gray-50 px-4 py-4"
+                        >
+                            <div className="bg-gray-50">
                                 <div 
                                     className="flex justify-between items-center cursor-pointer"
                                     onClick={() => setShowColumns(!showColumns)}
@@ -362,7 +363,7 @@ export default function ResumeTable({
                                 </div>
 
                                 {showColumns && (
-                                    <div className="flex flex-wrap gap-7 mt-3">
+                                    <div className="flex flex-wrap gap-4 mt-3">
                                         {Object.entries(selectedColumns).map(([column, isSelected]) => (
                                             <button 
                                                 key={column}
