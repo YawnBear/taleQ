@@ -5,6 +5,7 @@ import ResumeTable from "./ResumeTable";
 import UploadModal from "./UploadModal";
 import ClusteringPanel from "./ClusteringPanel";
 import ClusterResults from "./ClusterResults";
+import ExportButton from './ExportButton';
 
 export default function ResumePage() {
     const [showOverlay, setShowOverlay] = useState(false);
@@ -168,6 +169,7 @@ export default function ResumePage() {
     return (
         <>
             <div className="w-full max-w-[100rem] mx-auto px-6 py-8">
+                
                 <ResumeFilters 
                     searchQuery={searchQuery}
                     setSearchQuery={setSearchQuery}
@@ -176,6 +178,8 @@ export default function ResumePage() {
                     selectedColumns={selectedColumns}
                     handleColumnChange={handleColumnChange}
                 />
+                <ExportButton 
+                selectedColumns={selectedColumns}/>
 
                 <ResumeTable 
                     filteredResumes={filteredResumes}
