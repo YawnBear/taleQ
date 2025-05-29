@@ -73,7 +73,7 @@ export default function ResumeFilters({
                     >
                         <ListFilter className="w-4 h-4 text-gray-600" />
                         <span>
-                            Filter: {
+                            {
                             filterOptions.find(option => option.value === filterStatus)?.label || 'All Candidates'
                             }
                         </span>
