@@ -18,6 +18,7 @@ export default function ResumeTable({
     handleStatusChange,
     notifiedCandidates,
     setNotifiedCandidates,
+    handleColumnChange,
     onDeleteResume
 }) {
     const [selectedRows, setSelectedRows] = useState(new Set());
