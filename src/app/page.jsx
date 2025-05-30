@@ -12,7 +12,7 @@ export default function Home({ searchQuery, setSearchQuery }) {
 
     const navItems = [
         { label: "Resume", value: "Resume" },
-        { label: "JobPosition", value: "jobPosition" },
+        { label: "Job Listings", value: "jobPosition" },
         { label: "Calendar", value: "Calendar" },
         { label: "Settings", value: "Settings" },
     ];
@@ -20,7 +20,7 @@ export default function Home({ searchQuery, setSearchQuery }) {
     return (
         <div className="flex flex-col min-h-screen bg-[#e6ebf4]">
             {/* Top Navigation Bar */}
-            <nav className="w-full bg-white shadow-md rounded-b-xl px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+            <nav className="w-full bg-white shadow-md rounded-b-s px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
                 {/* Top Section - Logo and Search */}
                 <div className="flex items-center justify-between w-full sm:w-auto">
                     <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentPage("jobPosition")}>
@@ -55,7 +55,7 @@ export default function Home({ searchQuery, setSearchQuery }) {
             </nav>
 
             {/* Main Content */}
-            <main className="flex-1 overflow-y-auto p-6">
+            <main className="flex-1 overflow-y-auto px-6">
                 {currentPage === "jobPosition" && <JobDesc />}
                 {currentPage === "Resume" && <ResumePage />}
                 {currentPage === "Calendar" && <Calendar />}

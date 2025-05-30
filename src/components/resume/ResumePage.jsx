@@ -167,7 +167,7 @@ export default function ResumePage() {
 
     return (
         <>
-            <div className="w-full max-w-[100rem] mx-auto px-6 py-8">
+            <div className="w-full max-w-[100rem] mx-auto px-6 py-4">
                 
                 <ResumeFilters 
                     searchQuery={searchQuery}
@@ -177,7 +177,6 @@ export default function ResumePage() {
                     selectedColumns={selectedColumns}
                     handleColumnChange={handleColumnChange}
                 />
-                
 
                 <ResumeTable 
                     filteredResumes={filteredResumes}

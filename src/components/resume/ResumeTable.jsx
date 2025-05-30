@@ -268,7 +268,7 @@ export default function ResumeTable({
     return (
         <div className="bg-white rounded-lg shadow overflow-hidden relative">
             {/* Action Bar */}
-            <div className="bg-gray-50 border-b border-gray-200 px-4 py-3 flex justify-between items-center">
+            <div className="bg-gray-50 px-4 flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     {/* Selected resumes info */}
                     {selectedRows.size > 0 && (
