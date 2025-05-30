@@ -403,9 +403,7 @@ export default function ResumeTable({
                             .map(([column]) => (
                                 <th 
                                     key={column}
-                                    className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                                        column === 'name' ? 'text-center' : 'text-left'
-                                    }`}
+                                    className={`px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-left`}
                                 >
                                     {column}
                                 </th>
@@ -434,15 +432,15 @@ export default function ResumeTable({
                                     .map(([column]) => (
                                         <td 
                                             key={column}
-                                            className={`px-4 py-4 text-sm text-gray-500 align-top ${
-                                                column === 'name' ? 'text-center' : 'text-left'
+                                            className={`px-4 py-4 text-sm text-gray-500  ${
+                                                column === 'name' ? 'align-center' : 'align-top'
                                             }`}
                                         >
                                             {column === 'name' ? (
                                                 <div className="flex flex-col items-center gap-2">
                                                     <button
                                                         onClick={() => setSelectedResumeId(resume.ID)}
-                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium focus:outline-none"
+                                                        className="text-blue-600 hover:text-blue-800 hover:underline font-medium focus:outline-none justify-center"
                                                     >
                                                         {getCellValue(resume, column)}
                                                     </button>
