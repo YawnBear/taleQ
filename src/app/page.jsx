@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import JobDesc from "@/components/jobs/JobDesc";
-import UploadResume from "@/components/resume/UploadResume";
+import ResumePage from "@/components/resume/ResumePage";
 import Calendar from "@/components/calendar/Calendar";
 import Settings from "@/components/Settings";
 import SearchBar from "../components/ui/SearchBar";
@@ -57,7 +57,7 @@ export default function Home({ searchQuery, setSearchQuery }) {
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto p-6">
                 {currentPage === "jobPosition" && <JobDesc />}
-                {currentPage === "Resume" && <UploadResume />}
+                {currentPage === "Resume" && <ResumePage />}
                 {currentPage === "Calendar" && <Calendar />}
                 {currentPage === "Settings" && <Settings />}
             </main>

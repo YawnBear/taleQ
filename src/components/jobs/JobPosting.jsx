@@ -18,7 +18,6 @@ export default function JobPosting({handleToggleForm,}) {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        // Use your API route instead of direct JamAI call
         const res = await fetch('/api/jobs', {
           method: 'GET',
           headers: {
