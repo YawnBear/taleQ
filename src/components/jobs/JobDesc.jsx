@@ -136,15 +136,13 @@ export default function JobDesc() {
     };
 
     return (
-        <div className="w-full max-w-[80rem] mx-auto px-2 py-8 ">
+        <div className="w-full max-w-[80rem] mx-auto px-2 py-2 ">
             <div className="mx-auto p-5">
                 {/* Header Section */}
-                <div className="">
-                    <div className="border-b border-green-300 pb-4 mb-4">
+                <div className="px-2 py-8">
+                    <div className="px-3 pb-4 mb-4">
                         <h1 className="text-4xl font-bold">Job Listings</h1>
-                        <p className="text-black max-w-3xl">
-                            Browse available positions or create new job descriptions.
-                        </p>
+                
                     </div>
                 </div>
                 

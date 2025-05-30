@@ -28,14 +28,6 @@ export default function ResumeFilters({
 
     return (
         <>
-            <div className="flex items-center justify-between py-4 px-2">
-                <div className="w-2/3 items-center">
-                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
-                </div>
-            </div>
-            {/* Header Section */}
-            
-
             {/* Search and Filter Section */}
             <div className="flex items-center justify-between py-2 px-2">
                 <div className="px-2 py-8">

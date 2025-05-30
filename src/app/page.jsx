@@ -1,81 +1,66 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import JobDesc from "@/components/jobs/JobDesc";
 import UploadResume from "@/components/resume/UploadResume";
 import Calendar from "@/components/calendar/Calendar";
 import Settings from "@/components/Settings";
+import SearchBar from "../components/ui/SearchBar";
 
-export default function Home() {
+export default function Home({ searchQuery, setSearchQuery }) {
     const [currentPage, setCurrentPage] = useState("Resume");
 
+    const navItems = [
+        { label: "Resume", value: "Resume" },
+        { label: "JobPosition", value: "jobPosition" },
+        { label: "Calendar", value: "Calendar" },
+        { label: "Settings", value: "Settings" },
+    ];
+
     return (
-        <>
-        <div className="flex h-screen">
-            <nav className="fixed w-48 h-screen bg-neutral-50 border-r border-gray-300 flex flex-col justify-between shadow-lg">
-                <div>
-                    <ul className="space-y-2">
-                        <div>
-                            <li className="p-4">
-                                <img src="/logo.png" alt="Logo" className="mx-auto" onClick={() => setCurrentPage("jobPosition")}/>
-                            </li>
-                        </div>
-                        <li className="mt-20">
-                            <button
-                                className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "Resume" ? "bg-green-100 text-emerald-500" : "hover:bg-slate-200"
-                                }`}
-                                onClick={() => setCurrentPage("Resume")}
-                            >
-                                Resume
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "jobPosition" ? "bg-green-100 text-emerald-500" : "hover:bg-slate-200"
-                                }`}
-                                onClick={() => setCurrentPage("jobPosition")}
-                            >
-                                Job Listings
-                            </button>
-                        </li>
-                        <li>
-                            <button
-                                className={`w-full text-left px-4 py-2 rounded ${
-                                    currentPage === "Calendar" ? "bg-green-100 text-emerald-500" : "hover:bg-slate-200"
-                                }`}
-                                onClick={() => setCurrentPage("Calendar")}
-                            >
-                                Calendar
-                            </button>
-                        </li>
-                    </ul>
+        <div className="flex flex-col min-h-screen bg-[#e6ebf4]">
+            {/* Top Navigation Bar */}
+            <nav className="w-full bg-white shadow-md rounded-b-xl px-8 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                {/* Top Section - Logo and Search */}
+                <div className="flex items-center justify-between w-full sm:w-auto">
+                    <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentPage("jobPosition")}>
+                        <img src="/logo.png" alt="Logo" className="h-10" />
+                        <span className="text-xl font-semibold text-green-600">TaleQ</span>
+                    </div>
+                    <div className="sm:hidden ml-auto">
+                        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                    </div>
                 </div>
-                
-                {/* Settings button at bottom */}
-                <div className="mb-4">
-                    <button
-                        className={`w-full text-left px-4 py-2 rounded flex items-center ${
-                            currentPage === "Settings" ? "bg-green-500 text-white" : "hover:bg-slate-300"
-                        }`}
-                        onClick={() => setCurrentPage("Settings")}
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        Settings
-                    </button>
+
+                {/* Center Section - Navigation */}
+                <ul className="flex gap-10 mt-4 sm:mt-0 sm:mx-auto text-base font-medium text-gray-600">
+                    {navItems.map((item) => (
+                        <li
+                            key={item.value}
+                            onClick={() => setCurrentPage(item.value)}
+                            className={`cursor-pointer relative pb-1 transition duration-200 ${
+                                currentPage === item.value
+                                    ? "text-black after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[3px] after:bg-gradient-to-t after:from-emerald-500 after:to-transparent"
+                                    : "hover:text-black hover:after:content-[''] hover:after:absolute hover:after:bottom-0 hover:after:left-0 hover:after:w-full hover:after:h-[3px] hover:after:bg-gradient-to-t hover:after:from-emerald-400 hover:after:to-transparent"
+                            }`}
+                        >
+                            {item.label}
+                        </li>
+                    ))}
+                </ul>
+                {/* Right Section - SearchBar for Desktop */}
+                <div className="hidden sm:block">
+                    <SearchBar value={searchQuery} onChange={setSearchQuery} />
                 </div>
             </nav>
-            <main className="flex-1 ml-48">
+
+            {/* Main Content */}
+            <main className="flex-1 overflow-y-auto p-6">
                 {currentPage === "jobPosition" && <JobDesc />}
                 {currentPage === "Resume" && <UploadResume />}
                 {currentPage === "Calendar" && <Calendar />}
                 {currentPage === "Settings" && <Settings />}
             </main>
         </div>
-        </>
     );
 }
