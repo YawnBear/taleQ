@@ -4,7 +4,6 @@ export async function GET(request) {
     try {
         const { searchParams } = new URL(request.url);
         const columns = searchParams.get('columns');
-        console.log('Columns parameter:', columns);
 
         if (!columns) {
             return NextResponse.json({ 

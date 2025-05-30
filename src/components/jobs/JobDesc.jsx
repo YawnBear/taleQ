@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import { FileUpload } from "@/components/ui/UploadFile";
-import { Switch } from "@/components/ui/switch";
-import SearchBar from "../ui/SearchBar";
 import JobPosting from "./JobPosting";
 
 export default function JobDesc() {
@@ -16,7 +14,6 @@ export default function JobDesc() {
     const [mode, setMode] = useState("manual");
     const [uploadedFiles, setUploadedFiles] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [lastUpdate, setLastUpdate] = useState(Date.now());
 
     const handleToggleForm = () => {
         setToggleForm(!toggleForm);
@@ -68,7 +65,6 @@ export default function JobDesc() {
                 formData.append("file", pdfBlob, `${jobPosition}.pdf`);
                 formData.append("jobPosition", jobPosition);
 
-                // Upload to server using consolidated endpoint
                 const uploadResponse = await fetch("/api/jobs", {
                     method: "POST",
                     body: formData,
@@ -101,7 +97,6 @@ export default function JobDesc() {
                     formData.append("file", file);
                     formData.append("jobPosition", jobPosition || file.name.replace('.pdf', ''));
 
-                    // Use consolidated endpoint
                     const uploadResponse = await fetch("/api/jobs", {
                         method: "POST",
                         body: formData,
