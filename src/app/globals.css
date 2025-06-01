@@ -12,6 +12,11 @@ body {
   font-family: var(--font-rubik), Helvetica, sans-serif;
 }
 
+/* Search bar specific styles - moved after general input styles */
+#search-bar:hover,
+#search-bar:focus-visible {
+  box-shadow: 0 0 0 0;
+}
 
 .button {
   border-radius: 8px;

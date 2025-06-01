@@ -285,7 +285,7 @@ export default function ResumeTable({
                     )}
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 pt-3">
                     {/* Remove Duplicates Button */}
                     {duplicateCount > 0 && (
                         <button

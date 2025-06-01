@@ -7,6 +7,7 @@ export default function SearchBar({ value, onChange }) {
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
   return (
     <TextField
+      id="search-bar"
       fullWidth
       placeholder={placeholderVisible ? "Search" : ""}
       variant="outlined"
