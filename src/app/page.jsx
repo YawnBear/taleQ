@@ -7,8 +7,9 @@ import Calendar from "@/components/calendar/Calendar";
 import Settings from "@/components/Settings";
 import SearchBar from "../components/ui/SearchBar";
 
-export default function Home({ searchQuery, setSearchQuery }) {
+export default function Home() {
     const [currentPage, setCurrentPage] = useState("Resume");
+    const [searchQuery, setSearchQuery] = useState("");
 
     const navItems = [
         { label: "Resume", value: "Resume" },
@@ -28,7 +29,7 @@ export default function Home({ searchQuery, setSearchQuery }) {
                         <span className="text-xl font-semibold text-green-600">TaleQ</span>
                     </div>
                     <div className="sm:hidden ml-auto">
-                        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                        {/* <SearchBar value={searchQuery} onChange={setSearchQuery} /> */}
                     </div>
                 </div>
 
@@ -50,14 +51,15 @@ export default function Home({ searchQuery, setSearchQuery }) {
                 </ul>
                 {/* Right Section - SearchBar for Desktop */}
                 <div className="hidden sm:block">
+                    {console.log("searchQuery:", searchQuery, "setSearchQuery type:", typeof setSearchQuery)}
                     <SearchBar value={searchQuery} onChange={setSearchQuery} />
                 </div>
             </nav>
 
             {/* Main Content */}
             <main className="flex-1 overflow-y-auto px-6">
-                {currentPage === "jobPosition" && <JobDesc />}
-                {currentPage === "Resume" && <ResumePage />}
+                {currentPage === "jobPosition" && <JobDesc searchQuery={searchQuery}/>}
+                {currentPage === "Resume" && <ResumePage searchQuery={searchQuery}/>}
                 {currentPage === "Calendar" && <Calendar />}
                 {currentPage === "Settings" && <Settings />}
             </main>

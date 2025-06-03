@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { FileUpload } from "@/components/ui/UploadFile";
 import JobPosting from "./JobPosting";
 
-export default function JobDesc() {
+export default function JobDesc({searchQuery}) {
     const [toggleForm, setToggleForm] = useState(false);
     const [jobPosition, setJobPosition] = useState("");
     const [jobDesc, setJobDesc] = useState("");
@@ -13,7 +13,6 @@ export default function JobDesc() {
     const [successMessage, setSuccessMessage] = useState("");
     const [mode, setMode] = useState("manual");
     const [uploadedFiles, setUploadedFiles] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
 
     const handleToggleForm = () => {
         setToggleForm(!toggleForm);

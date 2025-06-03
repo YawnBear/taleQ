@@ -6,10 +6,9 @@ import UploadModal from "./UploadModal";
 import ClusteringPanel from "./ClusteringPanel";
 import ClusterResults from "./ClusterResults";
 
-export default function ResumePage() {
+export default function ResumePage({searchQuery}) {
     const [showOverlay, setShowOverlay] = useState(false);
     const [uploadedFiles, setUploadedFiles] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
     const [isUploading, setIsUploading] = useState(false);
     
@@ -21,6 +20,8 @@ export default function ResumePage() {
     
     // Custom hooks for state management
     const [notifiedCandidates, setNotifiedCandidates] = useNotifiedCandidates();
+
+    
     
     const [selectedColumns, setSelectedColumns] = useState({
         name: true,
@@ -171,7 +172,7 @@ export default function ResumePage() {
                 
                 <ResumeFilters 
                     searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
+                    // setSearchQuery={setSearchQuery}
                     filterStatus={filterStatus}
                     setFilterStatus={setFilterStatus}
                     selectedColumns={selectedColumns}

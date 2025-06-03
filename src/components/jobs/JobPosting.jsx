@@ -6,13 +6,11 @@ import {
 import { useEffect, useState } from "react";
 import JobDetailsOverlay from "./JobDetailsOverlay";
 
-export default function JobPosting({handleToggleForm,}) {
+export default function JobPosting({handleToggleForm, searchQuery}) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedJobId, setSelectedJobId] = useState(null);
   const [filteredJobs, setFilteredJobs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [lastUpdate, setLastUpdate] = useState(Date.now());
 
   // Add polling for job updates
   useEffect(() => {
