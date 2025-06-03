@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import SearchBar from '../ui/SearchBar';
 import { ChevronDown, ListFilter } from 'lucide-react';
 
 export default function ResumeFilters({ 
     filterStatus, 
     setFilterStatus, 
-    selectedColumns,    
+    selectedColumns,
+    searchQuery
 }) { 
     const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
@@ -36,30 +36,46 @@ export default function ResumeFilters({
             document.body.removeChild(a);
         };
     
-        const handleExportToCSV = async () => {
-            setIsExporting(true);
-            try {
-                const columns = Object.entries(selectedColumns)
-                    .filter(([_, isSelected]) => isSelected)
-                    .map(([column]) => column)
-                    .join(',');
-    
-                const response = await fetch(`/api/export-resume?columns=${columns}`);
-    
-    
-                if (!response.ok) {
-                    throw new Error('Failed to export CSV');
-                }
-    
-                const blob = await response.blob();
-                downloadCsv(blob);
-    
-            } catch (error) {
-                console.error('Export error:', error);
-                alert('Failed to export data: ' + error.message);
-            } finally {
-                setIsExporting(false);
+    const handleExportToCSV = async () => {
+        setIsExporting(true);
+        try {
+            // Get selected columns
+            const columns = Object.entries(selectedColumns)
+                .filter(([_, isSelected]) => isSelected)
+                .map(([column]) => column)
+                .join(',');
+
+            // Build query parameters including filters
+            const queryParams = new URLSearchParams();
+            
+            // Add selected columns
+            queryParams.append('columns', columns);
+            
+            // Add current filter status
+            if (filterStatus !== 'all') {
+                queryParams.append('filterStatus', filterStatus);
             }
+            
+            // Add search query if it exists
+            if (searchQuery && searchQuery.trim()) {
+                queryParams.append('searchQuery', searchQuery);
+            }
+
+            const response = await fetch(`/api/export-resume?${queryParams.toString()}`);
+
+            if (!response.ok) {
+                throw new Error('Failed to export CSV');
+            }
+
+            const blob = await response.blob();
+            downloadCsv(blob);
+
+        } catch (error) {
+            console.error('Export error:', error);
+            alert('Failed to export data: ' + error.message);
+        } finally {
+            setIsExporting(false);
+        }
     };
     return (
         <>

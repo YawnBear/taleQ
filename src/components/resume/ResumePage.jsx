@@ -172,11 +172,9 @@ export default function ResumePage({searchQuery}) {
                 
                 <ResumeFilters 
                     searchQuery={searchQuery}
-                    // setSearchQuery={setSearchQuery}
                     filterStatus={filterStatus}
                     setFilterStatus={setFilterStatus}
                     selectedColumns={selectedColumns}
-                    handleColumnChange={handleColumnChange}
                 />
 
                 <ResumeTable 
