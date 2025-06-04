@@ -1,12 +1,14 @@
 import { format } from 'date-fns';
 import { useState, useEffect } from 'react';
-import { Switch } from '@/components/ui/switch'; // Make sure this import path is correct
+import { Switch } from '@/components/ui/switch';
 
 export default function BookingModal({ isOpen, onClose, selectedDate, selectedSlot, onBookSlot }) {
     // Store the date internally to prevent it from being lost
     const [dateValue, setDateValue] = useState(null);
-    // New state for the display toggle
-    const [showSelectedDateOnly, setShowSelectedDateOnly] = useState(true);
+    
+    // Add controlled state for form inputs
+    const [candidateName, setCandidateName] = useState('');
+    const [email, setEmail] = useState('');
     
     // Update internal date when props change
     useEffect(() => {
@@ -14,6 +16,14 @@ export default function BookingModal({ isOpen, onClose, selectedDate, selectedSl
             setDateValue(selectedDate);
         }
     }, [selectedDate]);
+    
+    // Reset form when modal opens/closes
+    useEffect(() => {
+        if (isOpen) {
+            setCandidateName('');
+            setEmail('');
+        }
+    }, [isOpen]);
     
     // If the modal isn't open or there's no date, don't render
     if (!isOpen || !dateValue) return null;
@@ -23,22 +33,24 @@ export default function BookingModal({ isOpen, onClose, selectedDate, selectedSl
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
         
-        // Use the stored dateValue instead of relying on the prop
+        // Use the controlled state values
         onBookSlot({
-            candidateName: formData.get('candidateName'),
-            email: formData.get('email'),
-            date: dateValue, // Pass the stored date back
-            showSelectedDateOnly, // Pass the display preference
+            candidateName,
+            email,
+            date: dateValue,
         });
+        
+        // Reset form after submission
+        setCandidateName('');
+        setEmail('');
     };
 
     return (
         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
             <div 
                 className="bg-white p-6 rounded-lg w-96 shadow-xl border border-gray-200"
-                onClick={(e) => e.stopPropagation()} // Prevent clicks from closing the modal
+                onClick={(e) => e.stopPropagation()}
             >
                 <h3 className="text-lg font-semibold mb-4 text-gray-800">
                     Book Interview Slot
@@ -54,18 +66,6 @@ export default function BookingModal({ isOpen, onClose, selectedDate, selectedSl
                             </p>
                         </div>
                         
-                        {/* Display toggle switch */}
-                        <div className="flex items-center justify-between">
-                            <label htmlFor="date-filter" className="text-sm font-medium text-gray-700">
-                                Show only slots for this date
-                            </label>
-                            <Switch 
-                                id="date-filter"
-                                checked={showSelectedDateOnly}
-                                onCheckedChange={setShowSelectedDateOnly}
-                            />
-                        </div>
-                        
                         <div>
                             <label htmlFor="candidateName" className="block text-sm font-medium text-gray-700">
                                 Candidate Name
@@ -75,6 +75,8 @@ export default function BookingModal({ isOpen, onClose, selectedDate, selectedSl
                                 name="candidateName"
                                 id="candidateName"
                                 required
+                                value={candidateName}
+                                onChange={(e) => setCandidateName(e.target.value)}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                             />
                         </div>
@@ -87,6 +89,8 @@ export default function BookingModal({ isOpen, onClose, selectedDate, selectedSl
                                 name="email"
                                 id="email"
                                 required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                             />
                         </div>

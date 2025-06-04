@@ -95,7 +95,7 @@ export default function Calendar() {
     };
 
     const handleBookSlot = (bookingData) => {
-        const { candidateName, email, date, showSelectedDateOnly: newShowSelectedDateOnly } = bookingData;
+        const { candidateName, email, date} = bookingData;
         
         // Create a new booking
         const newBooking = {
@@ -110,9 +110,6 @@ export default function Calendar() {
         const updatedInterviews = [...interviews, newBooking];
         localStorage.setItem('interviews', JSON.stringify(updatedInterviews));
         setInterviews(updatedInterviews);
-        
-        // Save the display preference
-        setShowSelectedDateOnly(newShowSelectedDateOnly);
         
         // Close the modal
         handleCloseModal();
