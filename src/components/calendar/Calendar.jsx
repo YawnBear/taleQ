@@ -159,7 +159,7 @@ export default function Calendar() {
     return (
         <div className="w-full max-w-[80rem] mx-auto p-8 space-y-8">
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-4">Calendar</h1>
+                <h1 className="text-4xl font-bold mb-2">Calendar</h1>
                 <p className="text-gray-600 max-w-4xl">
                     View all scheduled interviews here. Click on a date to see available time slots, and book interviews with candidates.
                 </p>

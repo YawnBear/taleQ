@@ -133,16 +133,14 @@ export default function JobDesc({searchQuery}) {
         <div className="w-full max-w-[80rem] mx-auto px-2 py-2 ">
             <div className="mx-auto p-5">
                 {/* Header Section */}
-                <div className="px-2 py-8">
+                <div className="px-2 pt-8">
                     <div className="px-3 pb-4 mb-4">
                         <h1 className="text-4xl font-bold">Job Listings</h1>
-                
                     </div>
                 </div>
                 
-                
                 {/* Job Listings */}
-                <div className="px-4">
+                <div>
                     <JobPosting handleToggleForm={handleToggleForm} searchQuery={searchQuery}/>
                 </div>
                 

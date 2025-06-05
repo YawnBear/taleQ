@@ -104,7 +104,7 @@ export default function JobPosting({handleToggleForm, searchQuery}) {
   );
 
    return (
-    <div className="flex flex-col items-center justify-center min-h-[10vh] rounded py-10 px-4 sm:px-8">
+    <div className="flex flex-col items-center justify-center min-h-[10vh] rounded">
       <div className="w-full">
         <div className="container mx-auto mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
           {filteredJobs.map((job) => (
