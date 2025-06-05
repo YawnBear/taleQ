@@ -1,4 +1,5 @@
 # :bust_in_silhouette: taleQ - HR Talent Acquisition Solution
+
 An AI-powered talent acquisition system designed to streamline resume screening and HR workflow. 
 
 Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
@@ -38,6 +39,7 @@ npm run dev
 
 ## :memo: Future Enhancements 
 1. Auto Resume Fetching from Email
+2. Diagram Visualization to conduct skill gap analysis
 
 ## :heart: Contributors 
 1. Ashley Chan Li Ling - Backend Developer 
