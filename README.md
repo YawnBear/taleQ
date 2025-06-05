@@ -3,7 +3,7 @@
 An AI-powered talent acquisition system designed to streamline resume screening and HR workflow. 
 
 Live Demo : [https://tale-q.vercel.app/](https://tale-q.vercel.app/)
-Pitch Deck : 
+Pitch Deck : [Canva Link](https://www.canva.com/design/DAGpQgnSrfo/Ih9zFruhFN4frKHplQKx4A/view?utm_content=DAGpQgnSrfo&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=h02ae9e458e)
 
 ## :pushpin: Key Features 
 - Resume Screening
